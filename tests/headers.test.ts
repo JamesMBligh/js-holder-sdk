@@ -9,16 +9,18 @@ describe('Invalid x-v header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
+    //let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
 
     beforeEach(() => {
         mockRequest = {};
-        mockResponse = {
+        //mockResponse = {};
+       mockResponse = {
             send: jest.fn(),
             setHeader: jest.fn(),
             json: jest.fn(),
             status: jest.fn()
-        };
+       };
     });
 
     test('missing x-v value is returns error', function () {
@@ -29,8 +31,8 @@ describe('Invalid x-v header', function () {
                 detail: 'x-v'
             }]
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
-        expect(mockResponse.send).toBeCalledWith(returnedErrors);
+        dsbHeaders(mockRequest as Request, mockResponse as Response, nextFunction);
+        expect(mockResponse.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
     });
 
@@ -49,7 +51,7 @@ describe('Invalid x-v header', function () {
             }
         };
         dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
-        expect(mockResponse.send).toBeCalledWith(returnedErrors);
+        expect(mockResponse.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
     });
 
@@ -68,7 +70,7 @@ describe('Invalid x-v header', function () {
             }
         };
         dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
-        expect(mockResponse.send).toBeCalledWith(returnedErrors);
+        expect(mockResponse.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
     });
 
@@ -118,12 +120,12 @@ describe('Validate x-fapi-header header', function () {
             status: jest.fn(),
         };
     });
-    test('x-fapi value is returned', function () {
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
-        //expect(mockResponse.setHeader).toBeCalledWith("x-fapi-interaction-id", any);
-        console.log(JSON.stringify(mockResponse));
-        expect(nextFunction).toBeCalledTimes(1);
-    });
+    // test('x-fapi value is returned', function () {
+    //     dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
+    //     //expect(mockResponse.setHeader).toBeCalledWith("x-fapi-interaction-id", any);
+    //     console.log(JSON.stringify(mockResponse));
+    //     expect(nextFunction).toBeCalledTimes(1);
+    // });
 
     test('x-fapi response matches x-fapi request ', function () {
         const mockUUID = 'c24218e2-295c-497a-8085-b9b8038d8baa';
@@ -154,7 +156,7 @@ describe('Validate x-fapi-header header', function () {
             }]
         };
         dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction);
-        expect(mockResponse.send).toBeCalledWith(returnedErrors);
+        expect(mockResponse.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
     });
 

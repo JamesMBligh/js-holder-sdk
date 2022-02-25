@@ -27,7 +27,8 @@ export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
     }          
     res.setHeader('Content-Type', 'application/json');
     if (errorList.errors != null && errorList.errors.length > 0) {
-        res.status(400).send(errorList);
+        res.json(errorList);
+        res.status(400);
     } else {
         next();
     }   
