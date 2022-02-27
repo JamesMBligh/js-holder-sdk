@@ -1,32 +1,34 @@
 
-import { ErrorsEntity, MetaError, ResponseErrorListV2 } from 'consumer-data-standards';
+import { ResponseErrorListV2 } from 'consumer-data-standards';
 import { Request, Response, NextFunction } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
+import { ErrorEntity } from './error-entity';
 
-
-export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
-    var err: ErrorsEntity[] = [];
+  export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
+    //var errorEntityList: [];
     let errorList : ResponseErrorListV2 = {
-        errors: err
+        errors:  []
     }
     //let statusCode = 200;
     var versionValidationErrors = evaluateVersionHeader(req);
 
     if (versionValidationErrors.length > 0) {
-        versionValidationErrors.forEach(e => {
-            errorList.errors?.push(e);
+        versionValidationErrors.forEach((e: ErrorEntity) => {
+
+            errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
         })
         //statusCode = 400;
     };
     var versionXFapiValidationErrors = evaluateXFapiHeader(req, res);
     if (versionXFapiValidationErrors.length > 0) {
         versionXFapiValidationErrors.forEach(e => {
-            errorList.errors?.push(e);
+            errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
         })
-    }          
+    } 
+      
     res.setHeader('Content-Type', 'application/json');
-    if (errorList.errors != null && errorList.errors.length > 0) {
+    if (errorList != null && errorList.errors.length > 0) {
         res.json(errorList);
         res.status(400);
     } else {
@@ -34,13 +36,12 @@ export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
     }   
 }
 
-
-function evaluateVersionHeader(req: Request): ErrorsEntity[] {
+function evaluateVersionHeader(req: Request): ErrorEntity[] {
     // return 400;
     // test for missing required header required header is x-v
-    let returnedErrors: ErrorsEntity[] = [];
+    let returnedErrors: ErrorEntity[] = [];
     if (req.headers == null || req.headers['x-v'] == null) {
-        let errorResponse : ErrorsEntity = {
+        let errorResponse : ErrorEntity = {
             code: 'urn:au-cds:error:cds-all:Header/Missing',
             title: 'Missing Required Header',
             detail: 'x-v'
@@ -53,7 +54,7 @@ function evaluateVersionHeader(req: Request): ErrorsEntity[] {
     var val = req.headers['x-v'].toString();
     var version = parseInt(val);
     if (isNaN(version) == true) {
-        let errorResponse : ErrorsEntity = {
+        let errorResponse : ErrorEntity = {
             code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
             title: 'Invalid Version',
             detail: 'x-v'
@@ -65,7 +66,7 @@ function evaluateVersionHeader(req: Request): ErrorsEntity[] {
 
     var isValid = /^([1-9]\d*)$/.test(val);
     if (!isValid == true) {
-        let errorResponse : ErrorsEntity = {
+        let errorResponse : ErrorEntity = {
             code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
             title: 'Invalid Version',
             detail: 'x-v'
@@ -75,8 +76,8 @@ function evaluateVersionHeader(req: Request): ErrorsEntity[] {
     return returnedErrors;
 }
 
-function evaluateXFapiHeader(req: Request, res: Response): ErrorsEntity[] {
-    let returnedErrors: ErrorsEntity[] = [];
+function evaluateXFapiHeader(req: Request, res: Response): ErrorEntity[] {
+    let returnedErrors: ErrorEntity[] = [];
     // test is header is in request
     if (req.headers == null || req.headers['x-fapi-interaction-id'] == null) {
         const newUuid = uuidv4();
@@ -86,7 +87,7 @@ function evaluateXFapiHeader(req: Request, res: Response): ErrorsEntity[] {
         if (uuidValidate(v4Uuid) === true) {
             res.setHeader('x-fapi-interaction-id', v4Uuid);
         } else {
-            let errorResponse : ErrorsEntity = {
+            let errorResponse : ErrorEntity = {
                 code: 'urn:au-cds:error:cds-all:Header/Invalid',
                 title: 'Invalid Header',
                 detail: 'x-fapi-interaction-id'
