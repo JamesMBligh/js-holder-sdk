@@ -2,7 +2,7 @@
 
 import { Request, Response, NextFunction} from 'express';
 import { dsbHeaders } from "../src/header";
-import { ResponseErrorListV2 } from 'consumer-data-standards';
+import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { stringify } from 'uuid';
 
 describe('Invalid x-v header', function () {

@@ -1,12 +1,12 @@
 
-import { ResponseErrorListV2 } from 'consumer-data-standards';
+import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { Request, Response, NextFunction } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
 import { ErrorEntity } from './error-entity';
 
   export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
-    //var errorEntityList: [];
+
     let errorList : ResponseErrorListV2 = {
         errors:  []
     }
