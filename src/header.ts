@@ -8,35 +8,38 @@ import { ErrorEntity } from './models/error-entity';
 import endpoints from './data/energy-endpoints.json'
 
 
-export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
-
-    let errorList : ResponseErrorListV2 = {
-        errors:  []
-    }
-
-    var versionValidationErrors = evaluateVersionHeader(req);
-    if (versionValidationErrors.length > 0) {
-        versionValidationErrors.forEach((e: ErrorEntity) => {
-            errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
-        })
-    };
-
-    var versionXFapiValidationErrors = evaluateXFapiHeader(req, res);
-    if (versionXFapiValidationErrors.length > 0) {
-        versionXFapiValidationErrors.forEach(e => {
-            errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
-        })
-    } 
-      
-    //res.setHeader('Content-Type', 'application/json');
-    if (errorList != null && errorList.errors.length > 0) {
-        res.json(errorList);
-        res.status(400);
-    } else {
-        res.status(200);       
-    } 
-    next();  
+export function dsbHeaders(req: Request, res: Response, next: NextFunction, options: any) {
+    
+   // function dsbHeaders1(req: Request, res: Response, next: NextFunction) {
+        let errorList : ResponseErrorListV2 = {
+            errors:  []
+        }
+    
+        var versionValidationErrors = evaluateVersionHeader(req);
+        if (versionValidationErrors.length > 0) {
+            versionValidationErrors.forEach((e: ErrorEntity) => {
+                errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
+            })
+        };
+    
+        var versionXFapiValidationErrors = evaluateXFapiHeader(req, res);
+        if (versionXFapiValidationErrors.length > 0) {
+            versionXFapiValidationErrors.forEach(e => {
+                errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
+            })
+        } 
+          
+        //res.setHeader('Content-Type', 'application/json');
+        if (errorList != null && errorList.errors.length > 0) {
+            res.json(errorList);
+            res.status(400);
+        } else {
+            res.status(200);       
+        } 
+        next();  
+    //}
 }
+
 
 function evaluateVersionHeader(req: Request): ErrorEntity[] {
     // return 400;
@@ -71,6 +74,47 @@ function evaluateVersionHeader(req: Request): ErrorEntity[] {
             code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
             title: 'Invalid Version',
             detail: 'x-v'
+        }
+        returnedErrors.push(errorResponse);
+        
+    }
+    return returnedErrors;
+    
+}
+
+function evaluateMinVersionHeader(req: Request): ErrorEntity[] {
+    // return 400;
+    // test for missing required header required header is x-v
+    let returnedErrors: ErrorEntity[] = [];
+    if (req.headers['x-min-v'] == null) {
+        let errorResponse : ErrorEntity = {
+            code: 'urn:au-cds:error:cds-all:Header/Missing',
+            title: 'Missing Required Header',
+            detail: 'x-v'
+        }
+        returnedErrors.push(errorResponse);
+        return returnedErrors;
+    }
+    // test for invalid header   
+    // invalid version, eg negative number, no number: urn:au-cds:error:cds-all:Header/InvalidVersion
+    var val = req.headers['x-min-v'].toString();
+    var version = parseInt(val);
+    if (isNaN(version) == true) {
+        let errorResponse : ErrorEntity = {
+            code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
+            title: 'Invalid Version',
+            detail: 'x-min-v'
+        }
+        returnedErrors.push(errorResponse);
+        return returnedErrors;        
+    }
+       
+    var isValid = /^([1-9]\d*)$/.test(val);
+    if (!isValid == true) {
+        let errorResponse : ErrorEntity = {
+            code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
+            title: 'Invalid Version',
+            detail: 'x-min-v'
         }
         returnedErrors.push(errorResponse);
         
