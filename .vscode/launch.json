@@ -5,6 +5,7 @@
     "version": "0.2.0",
     "configurations": [
 
+
         {
             "type": "pwa-node",
             "request": "launch",
@@ -20,16 +21,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Jest Tests",
-            "program": "${workspaceRoot}\\node_modules\\jest\\bin\\jest.js",
-            "args": [
-                "-i"
-            ],
-            "internalConsoleOptions": "openOnSessionStart",
-            "outFiles": [
-                "${workspaceRoot}/dist/**/*"
-            ],
-            "envFile": "${workspaceRoot}/.env"
-        }
+            "name": "Jest: current file",
+            //"env": { "NODE_ENV": "test" },
+            "program": "${workspaceFolder}/node_modules/.bin/jest",
+            "args": ["${fileBasenameNoExtension}", "--config", "jest.config.js"],
+            "console": "integratedTerminal",
+            "disableOptimisticBPs": true,
+            "windows": {
+              "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+            }
+          }
     ]
 }

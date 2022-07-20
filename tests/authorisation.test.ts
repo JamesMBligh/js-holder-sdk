@@ -4,29 +4,43 @@ import { dsbAuthorisation } from '../src/authorisation';
 describe('Authorization middleware', () => {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
-    let nextFunction: NextFunction = jest.fn();
+    let nextFunction: NextFunction;
 
     beforeEach(() => {
-        mockRequest = {};
+        nextFunction = jest.fn();
+        mockRequest = { 
+            url: 'http://locahost:1234/energy/electricity/servicepoints'          
+        };
         mockResponse = {
             json: jest.fn()
         };
     });
 
-    test('without headers', async () => {
+    test('Without headers', async () => {
         const expectedResponse = {
-            "error": "Missing JWT token from the 'Authorization' header"
+            error: "Missing JWT token from the 'Authorization' header"
+        };
+        mockRequest = { 
+            url: 'http://locahost:1234/energy/electricity/servicepoints'          
         };
         dsbAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction);
-
         expect(mockResponse.json).toBeCalledWith(expectedResponse);
     });
 
-    test('without "authorization" header', async () => {
+    test('No authorization required', async () => {
+        mockRequest = { 
+            url: 'http://locahost:1234/energy/plans'          
+        };
+        dsbAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });
+
+    test('Without "authorization" header', async () => {
         const expectedResponse = {
             "error": "Missing JWT token from the 'Authorization' header"
         };
         mockRequest = {
+            url: 'http://locahost:1234/energy/electricity/servicepoints',
             headers: {
             }
         }
@@ -35,10 +49,11 @@ describe('Authorization middleware', () => {
         expect(mockResponse.json).toBeCalledWith(expectedResponse);
     });
 
-    test('with "authorization" header', async () => {
+    test('With "authorization" header', async () => {
         mockRequest = {
+            url: 'http://locahost:1234/energy/electricity/servicepoints',
             headers: {
-                'authorization': 'Bearer abc'
+                'Authorization': 'Bearer abc'
             }
         }
         dsbAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction);

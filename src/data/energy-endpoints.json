@@ -1,0 +1,209 @@
+[
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/plans",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": false,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/plans/{planId}",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/electricity/servicepoints",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": " /energy/electricity/servicepoints/{servicePointId}",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/electricity/servicepoints/{servicePointId}/usage",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/electricity/servicepoints/usage",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "POST",
+        "requestPath": "/energy/electricity/servicepoints/usage",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/electricity/servicepoints/{servicePointId}/der",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/electricity/servicepoints/der",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "POST",
+        "requestPath": "/energy/electricity/servicepoints/der",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}/payment-schedule",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}/concessions",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}/balance",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/balances",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    } ,
+    {
+        "requestType": "POST",
+        "requestPath": "/energy/accounts/balances",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}/invoices",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/invoices",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "POST",
+        "requestPath": "/energy/accounts/invoices",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/{accountId}/billing",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/energy/accounts/billing",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    },
+    {
+        "requestType": "POST",
+        "requestPath": "/energy/accounts/billing",
+        "requiresXFAPIAuthdate": false,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false
+    }                    
+]

@@ -3,23 +3,24 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { Request, Response, NextFunction } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
-import { ErrorEntity } from './error-entity';
+import { Endpoint } from './models/endpoint-entity';
+import { ErrorEntity } from './models/error-entity';
+import endpoints from './data/energy-endpoints.json'
 
-  export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
+
+export function dsbHeaders(req: Request, res: Response, next: NextFunction) {
 
     let errorList : ResponseErrorListV2 = {
         errors:  []
     }
-    //let statusCode = 200;
-    var versionValidationErrors = evaluateVersionHeader(req);
 
+    var versionValidationErrors = evaluateVersionHeader(req);
     if (versionValidationErrors.length > 0) {
         versionValidationErrors.forEach((e: ErrorEntity) => {
-
             errorList.errors.push({code: e.code, title: e.title, detail: e.detail});
         })
-        //statusCode = 400;
     };
+
     var versionXFapiValidationErrors = evaluateXFapiHeader(req, res);
     if (versionXFapiValidationErrors.length > 0) {
         versionXFapiValidationErrors.forEach(e => {
@@ -27,20 +28,21 @@ import { ErrorEntity } from './error-entity';
         })
     } 
       
-    res.setHeader('Content-Type', 'application/json');
+    //res.setHeader('Content-Type', 'application/json');
     if (errorList != null && errorList.errors.length > 0) {
         res.json(errorList);
         res.status(400);
     } else {
-        next();
-    }   
+        res.status(200);       
+    } 
+    next();  
 }
 
 function evaluateVersionHeader(req: Request): ErrorEntity[] {
     // return 400;
     // test for missing required header required header is x-v
     let returnedErrors: ErrorEntity[] = [];
-    if (req.headers == null || req.headers['x-v'] == null) {
+    if (req.headers == undefined || req.headers['x-v'] == null) {
         let errorResponse : ErrorEntity = {
             code: 'urn:au-cds:error:cds-all:Header/Missing',
             title: 'Missing Required Header',
@@ -63,7 +65,6 @@ function evaluateVersionHeader(req: Request): ErrorEntity[] {
         return returnedErrors;        
     }
        
-
     var isValid = /^([1-9]\d*)$/.test(val);
     if (!isValid == true) {
         let errorResponse : ErrorEntity = {
@@ -72,28 +73,40 @@ function evaluateVersionHeader(req: Request): ErrorEntity[] {
             detail: 'x-v'
         }
         returnedErrors.push(errorResponse);
+        
+    }
+    return returnedErrors;
+    
+}
+
+function evaluateXFapiHeader(req: Request, res: Response): ErrorEntity[] {
+    
+    let returnedErrors: ErrorEntity[] = [];
+    let ep = getEndpoint(req);
+    // test is header is in request
+    if (ep != null) {
+        if (req.headers == null || req.headers['x-fapi-interaction-id'] == null) {
+            const newUuid = uuidv4();
+            res.setHeader('x-fapi-interaction-id', newUuid);
+        } else {
+            const v4Uuid = req.headers['x-fapi-interaction-id'].toString();
+            if (uuidValidate(v4Uuid) === true) {
+                res.setHeader('x-fapi-interaction-id', v4Uuid);
+            } else {
+                let errorResponse : ErrorEntity = {
+                    code: 'urn:au-cds:error:cds-all:Header/Invalid',
+                    title: 'Invalid Header',
+                    detail: 'x-fapi-interaction-id'
+                }
+                returnedErrors.push(errorResponse);      
+            }      
+        }
     }
     return returnedErrors;
 }
 
-function evaluateXFapiHeader(req: Request, res: Response): ErrorEntity[] {
-    let returnedErrors: ErrorEntity[] = [];
-    // test is header is in request
-    if (req.headers == null || req.headers['x-fapi-interaction-id'] == null) {
-        const newUuid = uuidv4();
-        res.setHeader('x-fapi-interaction-id', newUuid);
-    } else {
-        const v4Uuid = req.headers['x-fapi-interaction-id'].toString();
-        if (uuidValidate(v4Uuid) === true) {
-            res.setHeader('x-fapi-interaction-id', v4Uuid);
-        } else {
-            let errorResponse : ErrorEntity = {
-                code: 'urn:au-cds:error:cds-all:Header/Invalid',
-                title: 'Invalid Header',
-                detail: 'x-fapi-interaction-id'
-            }
-            returnedErrors.push(errorResponse);      
-        }      
-    }
-    return returnedErrors;
+function getEndpoint(req: Request): Endpoint {
+    let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
+    let ep = endpoints[idx];
+    return ep;
 }
