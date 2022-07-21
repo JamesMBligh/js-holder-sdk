@@ -4,6 +4,7 @@ import { Request, Response, NextFunction} from 'express';
 import { dsbHeaders } from "../src/header";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { stringify } from 'uuid';
+import { EndpointConfig } from '../src/models/endpoint-config';
 
 describe('Invalid x-v header', function () {
 
@@ -11,7 +12,7 @@ describe('Invalid x-v header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
 
-    let options = {}
+    let options: EndpointConfig[] = [];
 
     beforeEach(() => {
        nextFunction = jest.fn() 
@@ -24,7 +25,7 @@ describe('Invalid x-v header', function () {
        };
     });
 
-    test('missing x-v value is returns error', function () {
+    test('Missing x-v value is returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/Missing',
@@ -39,7 +40,7 @@ describe('Invalid x-v header', function () {
         expect(nextFunction).toBeCalledTimes(1);
     });
 
-    test('non-numeric x-v value returns error', function () {
+    test('Non-numeric x-v value returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
@@ -60,7 +61,7 @@ describe('Invalid x-v header', function () {
         expect(nextFunction).toBeCalledTimes(1);
     });
 
-    test('invalid numeric x-v value returns error', function () {
+    test('Invalid numeric x-v value returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
@@ -89,9 +90,7 @@ describe('Valid x-v header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
 
-    let options = {
-
-    };
+    let options: EndpointConfig[] = [];
 
     beforeEach(() => {
         mockRequest = {};
@@ -123,12 +122,12 @@ describe('Invalid x-v-min header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
 
-    let options = {
+    let options: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
-        "minSupportedVersion": 1,
+        "minSupprtedVersion": 1,
         "maxSupportedVersion": 4
-    }
+    }]
 
     beforeEach(() => {
        nextFunction = jest.fn() 
@@ -142,7 +141,7 @@ describe('Invalid x-v-min header', function () {
     });
 
 
-    test('non-numeric x-min-v value returns error', function () {
+    test('Non-numeric x-min-v value returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
@@ -163,7 +162,7 @@ describe('Invalid x-v-min header', function () {
         expect(nextFunction).toBeCalledTimes(1);
     });
 
-    test('invalid numeric x-min-v value returns error', function () {
+    test('Invalid numeric x-min-v value returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/InvalidVersion',
@@ -192,20 +191,20 @@ describe('Valid x-v-min header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
 
-    let options = {
+    let options: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
-        "minSupportedVersion": 1,
+        "minSupprtedVersion": 1,
         "maxSupportedVersion": 4
-    };
+    }]
 
     beforeEach(() => {
         mockRequest = {};
         mockResponse = {
             send: jest.fn(),
             setHeader: jest.fn(),
-            json: jest.fn(),
             status: jest.fn(),
+            json: jest.fn()
         };
     });
 
@@ -256,7 +255,7 @@ describe('Validate x-fapi-header header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction; 
 
-    let options = {};
+    let options: EndpointConfig[] = [];
 
     beforeEach(() => {
         nextFunction = jest.fn(); 
@@ -316,11 +315,6 @@ describe('Validate x-fapi-header header', function () {
         expect(mockResponse.status).toBeCalledWith(400);
     });
 
-    test('content type is json', function () {
-        mockRequest.url = "https://localhost:1234/energy/plans/";
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-       expect(nextFunction).toBeCalledTimes(1);
-    });
 
     test('Missing x-fapi header', function () {
         mockRequest = {

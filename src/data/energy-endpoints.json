@@ -6,7 +6,8 @@
         "requiresAuthorisation": false,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -15,7 +16,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -24,7 +26,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -33,7 +36,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -42,7 +46,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -51,7 +56,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "POST",
@@ -87,7 +93,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -96,7 +103,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -114,7 +122,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -123,7 +132,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -141,7 +151,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     } ,
     {
         "requestType": "POST",
@@ -159,7 +170,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -168,7 +180,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "POST",
@@ -186,7 +199,8 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     },
     {
         "requestType": "GET",
@@ -204,6 +218,7 @@
         "requiresAuthorisation": true,
         "requiresCDSClientHeader": false,
         "requiresXv": true,
-        "requiresCDSArrangementID": false
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
     }                    
 ]
