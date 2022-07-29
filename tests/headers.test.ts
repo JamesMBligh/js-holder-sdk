@@ -1,7 +1,7 @@
 
 
-import { Request, Response, NextFunction} from 'express';
-import { dsbHeaders } from "../src/header";
+import { Request, Response, NextFunction, json} from 'express';
+import { cdrHeaders } from "../src/cdr-header";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { stringify } from 'uuid';
 import { EndpointConfig } from '../src/models/endpoint-config';
@@ -11,20 +11,28 @@ describe('Invalid x-v header', function () {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
+    let mockStatus : Partial<Response>;
+    
+//  mockResponse
 
     let options: EndpointConfig[] = [];
 
     beforeEach(() => {
+
        nextFunction = jest.fn() 
        mockRequest = {};
+       mockStatus = {
+          send: jest.fn(),
+          setHeader: jest.fn(),
+          json: jest.fn(),
+       }
        mockResponse = {
             send: jest.fn(),
             setHeader: jest.fn(),
             json: jest.fn(),
-            status: jest.fn()
-       };
-    });
-
+            status: jest.fn().mockImplementation(() =>  mockStatus)
+    }});
+    
     test('Missing x-v value is returns error', function () {
         let returnedErrors: ResponseErrorListV2 = {
             errors: [ {
@@ -33,11 +41,11 @@ describe('Invalid x-v header', function () {
                 detail: 'x-v'
             }]
         };
+
         mockRequest.url = "https://localhost:1234/energy/plans/";
-        dsbHeaders(mockRequest as Request, mockResponse as Response, nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response, nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Non-numeric x-v value returns error', function () {
@@ -55,10 +63,9 @@ describe('Invalid x-v header', function () {
                 'x-v': 'some_stupid_stuff'
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Invalid numeric x-v value returns error', function () {
@@ -76,10 +83,9 @@ describe('Invalid x-v header', function () {
                 'x-v': '1.0'
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        expect(nextFunction).toBeCalledTimes(1);
     });
 
 });
@@ -88,19 +94,25 @@ describe('Valid x-v header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
-    let nextFunction: NextFunction = jest.fn();
-
+    let nextFunction: NextFunction;
+    let mockStatus : Partial<Response>;
     let options: EndpointConfig[] = [];
 
     beforeEach(() => {
+
+        nextFunction = jest.fn() 
         mockRequest = {};
+        mockStatus = {
+           send: jest.fn(),
+           setHeader: jest.fn(),
+           json: jest.fn(),
+        }
         mockResponse = {
-            send: jest.fn(),
-            setHeader: jest.fn(),
-            json: jest.fn(),
-            status: jest.fn(),
-        };
-    });
+             send: jest.fn(),
+             setHeader: jest.fn(),
+             json: jest.fn(),
+             status: jest.fn().mockImplementation(() =>  mockStatus)
+     }});
 
     test('x-v value exists', function () {
         mockRequest = {
@@ -109,34 +121,39 @@ describe('Valid x-v header', function () {
             },
             url: "https://localhost:1234/energy/plans/"
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
         expect(nextFunction).toBeCalledTimes(1);
-        expect(mockResponse.status).toBeCalledWith(200);
+        //expect(mockResponse.status).toBeCalledWith(200);
     });
 });
-
 
 describe('Invalid x-v-min header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
+    let mockStatus : Partial<Response>;
 
     let options: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
-        "minSupprtedVersion": 1,
+        "minSupportedVersion": 1,
         "maxSupportedVersion": 4
     }]
 
     beforeEach(() => {
-       nextFunction = jest.fn() 
+       nextFunction = jest.fn() ;
+       mockStatus = {
+        send: jest.fn(),
+        setHeader: jest.fn(),
+        json: jest.fn(),
+     }
        mockRequest = {};
        mockResponse = {
             send: jest.fn(),
             setHeader: jest.fn(),
             json: jest.fn(),
-            status: jest.fn()
+            status: jest.fn().mockImplementation(() =>  mockStatus)
        };
     });
 
@@ -153,13 +170,14 @@ describe('Invalid x-v-min header', function () {
         mockRequest = {
             url: "https://localhost:1234/energy/plans/",
             headers: {
+                'x-v': '1',
                 'x-min-v': 'some_stupid_stuff'
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        expect(nextFunction).toBeCalledTimes(1);
+        //expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Invalid numeric x-min-v value returns error', function () {
@@ -174,13 +192,14 @@ describe('Invalid x-v-min header', function () {
         mockRequest = {
             url: "https://localhost:1234/energy/plans/",
             headers: {
+                'x-v': '1',
                 'x-min-v': '1.0'
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        expect(nextFunction).toBeCalledTimes(1);
+        //expect(nextFunction).toBeCalledTimes(1);
     });
 
 });
@@ -190,23 +209,30 @@ describe('Valid x-v-min header', function () {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
+    let mockStatus : Partial<Response>;
 
     let options: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
-        "minSupprtedVersion": 1,
+        "minSupportedVersion": 1,
         "maxSupportedVersion": 4
     }]
 
     beforeEach(() => {
+        nextFunction = jest.fn() ;
+        mockStatus = {
+         send: jest.fn(),
+         setHeader: jest.fn(),
+         json: jest.fn(),
+       }
         mockRequest = {};
         mockResponse = {
-            send: jest.fn(),
-            setHeader: jest.fn(),
-            status: jest.fn(),
-            json: jest.fn()
+             send: jest.fn(),
+             setHeader: jest.fn(),
+             json: jest.fn(),
+             status: jest.fn().mockImplementation(() =>  mockStatus)
         };
-    });
+     });
 
     test('x-min-v value is greater than x-v', function () {
         mockRequest = {
@@ -216,9 +242,9 @@ describe('Valid x-v-min header', function () {
             },
             url: "https://localhost:1234/energy/plans/"
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
         expect(nextFunction).toBeCalledTimes(1);
-        expect(mockResponse.status).toBeCalledWith(200);
+        //expect(mockResponse.status).toBeCalledWith(200);
     });
 
     test('x-min-v is supported', function () {
@@ -229,12 +255,20 @@ describe('Valid x-v-min header', function () {
             },
             url: "https://localhost:1234/energy/plans/"
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
         expect(nextFunction).toBeCalledTimes(1);
         //expect(mockResponse.status).toBeCalledWith(200);
     });
 
     test('x-min-v is NOT supported', function () {
+
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Header/UnsupportedVersion',
+                title: 'Unsupported Version',
+                detail: '5'
+            }]
+        };
         mockRequest = {
             headers: {           
                 'x-v': '6',
@@ -243,8 +277,9 @@ describe('Valid x-v-min header', function () {
             url: "https://localhost:1234/energy/plans/"
         };
 
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(nextFunction).toBeCalledTimes(1);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        //expect(nextFunction).toBeCalledTimes(1);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(406);
     });
 });
@@ -254,7 +289,7 @@ describe('Validate x-fapi-header header', function () {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction; 
-
+    let mockStatus : Partial<Response>;
     let options: EndpointConfig[] = [];
 
     beforeEach(() => {
@@ -264,19 +299,24 @@ describe('Validate x-fapi-header header', function () {
                 'x-v': '1'
             }
         }
-        mockResponse = {        
+        mockStatus = {
             send: jest.fn(),
             setHeader: jest.fn(),
-            getHeader: jest.fn(),
             json: jest.fn(),
-            status: jest.fn(),
-        };
+         }
+         mockResponse = {
+              send: jest.fn(),
+              setHeader: jest.fn(),
+              json: jest.fn(),
+              status: jest.fn().mockImplementation(() =>  mockStatus)
+      }
     });
 
     test('x-fapi value is returned', function () {
         mockRequest.url = "https://localhost:1234/energy/plans/";
-        dsbHeaders(mockRequest as Request, mockResponse as Response, nextFunction, options);
-        expect(mockResponse.setHeader).toBeCalledTimes(1);
+        cdrHeaders(mockRequest as Request, mockResponse as Response, nextFunction, options);
+        expect(mockResponse.setHeader).toBeCalledWith('x-v', 1);
+        expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
         expect(nextFunction).toBeCalledTimes(1);
     });
 
@@ -289,7 +329,7 @@ describe('Validate x-fapi-header header', function () {
                 'x-fapi-interaction-id': mockUUID
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
         expect(mockResponse.setHeader).toBeCalledWith("x-fapi-interaction-id", mockUUID);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -310,8 +350,8 @@ describe('Validate x-fapi-header header', function () {
                 detail: 'x-fapi-interaction-id'
             }]
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.json).toBeCalledWith(returnedErrors);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
     });
 
@@ -323,8 +363,9 @@ describe('Validate x-fapi-header header', function () {
                 'x-v': '1',
             }
         };
-        dsbHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
-        expect(mockResponse.setHeader).toBeCalledTimes(1);
+        cdrHeaders(mockRequest as Request, mockResponse as Response,nextFunction, options);
+        expect(mockResponse.setHeader).toBeCalledWith('x-v', 1);
+        expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
         expect(nextFunction).toBeCalledTimes(1);
     });
 

@@ -2,7 +2,7 @@
   "name": "dsb-middleware",
   "version": "1.0.0",
   "description": "A basic NodeJS project in Typescript",
-  "main": "dist/src/header.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
     "test": "jest --coverage",

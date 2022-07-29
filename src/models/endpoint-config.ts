@@ -1,6 +1,6 @@
 export interface EndpointConfig {
     requestType: string,
     requestPath: string,
-    minSupprtedVersion: number,
+    minSupportedVersion: number,
     maxSupportedVersion: number
 }
