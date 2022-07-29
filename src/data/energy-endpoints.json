@@ -9,16 +9,7 @@
         "requiresCDSArrangementID": false,
         "requiresXFAPI": true
     },
-    {
-        "requestType": "GET",
-        "requestPath": "/energy/plans/{planId}",
-        "requiresXFAPIAuthdate": false,
-        "requiresAuthorisation": true,
-        "requiresCDSClientHeader": false,
-        "requiresXv": true,
-        "requiresCDSArrangementID": false,
-        "requiresXFAPI": true
-    },
+
     {
         "requestType": "GET",
         "requestPath": "/energy/electricity/servicepoints",
@@ -29,16 +20,7 @@
         "requiresCDSArrangementID": false,
         "requiresXFAPI": true
     },
-    {
-        "requestType": "GET",
-        "requestPath": " /energy/electricity/servicepoints/{servicePointId}",
-        "requiresXFAPIAuthdate": false,
-        "requiresAuthorisation": true,
-        "requiresCDSClientHeader": false,
-        "requiresXv": true,
-        "requiresCDSArrangementID": false,
-        "requiresXFAPI": true
-    },
+
     {
         "requestType": "GET",
         "requestPath": "/energy/electricity/servicepoints/{servicePointId}/usage",
@@ -106,15 +88,7 @@
         "requiresCDSArrangementID": false,
         "requiresXFAPI": true
     },
-    {
-        "requestType": "GET",
-        "requestPath": "/energy/accounts/{accountId}",
-        "requiresXFAPIAuthdate": false,
-        "requiresAuthorisation": true,
-        "requiresCDSClientHeader": false,
-        "requiresXv": true,
-        "requiresCDSArrangementID": false
-    },
+
     {
         "requestType": "GET",
         "requestPath": "/energy/accounts/{accountId}/payment-schedule",

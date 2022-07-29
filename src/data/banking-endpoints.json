@@ -108,5 +108,65 @@
         "requiresXv": true,
         "requiresCDSArrangementID": false,
         "requiresXFAPI": true
-    },      
+    },  
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/payments/scheduled",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },  
+    {
+        "requestType": "POST",
+        "requestPath": "/banking/payments/scheduled",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/payees",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/payees/{payeeId}",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    } ,
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/products",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": false,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    } ,
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/products/{productId}",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": false,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    }                 
 ]
