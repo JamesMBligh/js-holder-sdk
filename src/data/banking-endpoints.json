@@ -1,0 +1,112 @@
+[
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/balances",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "POST",
+        "requestPath": "/banking/accounts/balances",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/balance",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/transactions",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/transactions/{transactionId}",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/direct-debits",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/direct-debits",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    } ,
+    {
+        "requestType": "POST",
+        "requestPath": "/banking/accounts/direct-debits",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    } ,
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/payments/scheduled",
+        "requiresXFAPIAuthdate": true,
+        "requiresAuthorisation": true,
+        "requiresCDSClientHeader": false,
+        "requiresXv": true,
+        "requiresCDSArrangementID": false,
+        "requiresXFAPI": true
+    },      
+]
