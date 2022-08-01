@@ -3,13 +3,11 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { Request, Response, NextFunction } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
-import { Endpoint } from './models/endpoint-entity';
 import { ErrorEntity } from './models/error-entity';
-import energyEndpoints from './data/energy-endpoints.json';
-import bankingEndpoints from './data/banking-endpoints.json';
 import { EndpointConfig } from './models/endpoint-config';
+import { getEndpoint, findXFapiRequired } from './cdr-utils';
 
-const endpoints = [...energyEndpoints, ...bankingEndpoints];
+
 
 
 export function cdrHeaders(req: Request, res: Response, next: NextFunction, options: EndpointConfig[]) {
@@ -185,11 +183,6 @@ function evaluateXFapiHeader(req: Request, res: Response): ErrorEntity[] {
     return returnedErrors;
 }
 
-function getEndpoint(req: Request): Endpoint {
-    let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-    let ep = endpoints[idx];
-    return ep as Endpoint;
-}
 
 function findMinSupported(req: Request, options: EndpointConfig[]): number {
     try {
@@ -198,16 +191,6 @@ function findMinSupported(req: Request, options: EndpointConfig[]): number {
         return ep.minSupportedVersion;
     } catch(e) {
         return 1;
-    }
-}
-
-function findXFapiRequired(req: Request): boolean {
-    try {
-        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-        let ep = endpoints[idx];
-        return ep.requiresXFAPI ??= true;
-    } catch(e) {
-        return true;
     }
 }
 
