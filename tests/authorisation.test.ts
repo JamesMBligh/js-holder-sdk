@@ -88,7 +88,7 @@ describe('Authorization middleware', () => {
         mockRequest = {
             url: 'http://locahost:1234/energy/electricity/servicepoints',
             headers: {
-                'Authorization': 'Bearer abc'
+                'authorization': 'Bearer abc'
             }
         }
 

@@ -1,8 +1,8 @@
 export interface Endpoint {
     requestType: string,
     requestPath: string,
+    authScopesRequired: string | null,
     requiresXFAPIAuthdate: boolean,
-    requiresAuthorisation: boolean,
     requiresCDSClientHeader: boolean,
     requiresXv: boolean,
     requiresCDSArrangementID: boolean
