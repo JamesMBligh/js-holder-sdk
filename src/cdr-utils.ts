@@ -1,24 +1,15 @@
 
-import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { Request, Response, NextFunction } from 'express';
-import { validate as uuidValidate } from 'uuid';
-import { v4 as uuidv4 } from 'uuid';
+import { Request } from 'express';
 import { Endpoint } from './models/endpoint-entity';
-import { ErrorEntity } from './models/error-entity';
 import energyEndpoints from './data/energy-endpoints.json';
 import bankingEndpoints from './data/banking-endpoints.json';
 import { EndpointConfig } from './models/endpoint-config';
+import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
 const endpoints = [...energyEndpoints, ...bankingEndpoints];
 
-export function isAuthorisationRequired(req: Request): boolean {
-    // determine from the url if authorisation is required
-    let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-    let ep = endpoints[idx];
-    return ep.authScopesRequired != null;
-}
 
-export function getEndpoint(req: Request): Endpoint {
+export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): Endpoint | null {
     // remove the host and assign to urlId
     // incrementally remove part of the urlId until a match is found
     // once a match is found and the last part is a url parameter as per endpoint defintions
@@ -28,8 +19,22 @@ export function getEndpoint(req: Request): Endpoint {
     //  => the next part of the url is a parameter, but it is NOT the last part
 
     let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-    let ep = endpoints[idx];
-    return ep as Endpoint;
+    let idx1 = -1;
+    if (idx < 0) {
+        /// this url is not an endpoint supported
+        errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
+    }
+    else {
+        idx1 = options.findIndex(x => x.requestPath == endpoints[idx].requestPath);
+        if (idx1 < 0) {
+            // this is a CDR endpoint but it has not been implemenetd by this server
+            errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
+        }
+    }
+    if (errorList.errors.length == 0)
+        return endpoints[idx] as Endpoint;
+    else
+        return null;
 }
 
 export function findXFapiRequired(req: Request): boolean {

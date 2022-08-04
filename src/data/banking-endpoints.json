@@ -33,7 +33,7 @@
         "requestType": "GET",
         "requestPath": "/banking/accounts/{accountId}/balance",
         "requiresXFAPIAuthdate": true,
-        "authScopesRequired": true,
+        "authScopesRequired": "bank:accounts.basic:read",
         "requiresCDSClientHeader": false,
         "requiresXv": true,
         "requiresCDSArrangementID": false,

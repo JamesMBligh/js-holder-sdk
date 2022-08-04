@@ -32,21 +32,18 @@ describe('Authorization middleware', () => {
      });
 
     test('Without headers', async () => {
-        // const expectedResponse = {
-        //     error: "Missing JWT token from the 'Authorization' header"
-        // };
 
-    let options: EndpointConfig[] = [{
-        "requestType": "GET",
-        "requestPath": "/energy/plans",
-        "minSupportedVersion": 1,
-        "maxSupportedVersion": 4
-    }]
+        let options: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/electricity/servicepoints",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
         mockRequest = { 
             url: 'http://locahost:1234/energy/electricity/servicepoints'          
         };
-        cdrAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction, options);
-       // expect(mockResponse.json).toBeCalledWith(expectedResponse);
+        let auth = cdrAuthorisation(options);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
 
@@ -55,20 +52,18 @@ describe('Authorization middleware', () => {
             url: 'http://locahost:1234/energy/plans'          
         };
 
-    let options: EndpointConfig[] = [{
-        "requestType": "GET",
-        "requestPath": "/energy/plans",
-        "minSupportedVersion": 1,
-        "maxSupportedVersion": 4
-    }]
-        cdrAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction, options);
+        let options: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/plans",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        let auth = cdrAuthorisation(options);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Without "authorization" header', async () => {
-        // const expectedResponse = {
-        //     "error": "Missing JWT token from the 'Authorization' header"
-        // };
 
     let options: EndpointConfig[] = [{
         "requestType": "GET",
@@ -77,13 +72,12 @@ describe('Authorization middleware', () => {
         "maxSupportedVersion": 4
     }]
         mockRequest = {
-            url: 'http://locahost:1234/energy/energy/accounts',
+            url: 'http://locahost:1234/energy/accounts',
             headers: {
             }
         }
-        cdrAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction, options);
-
-      //  expect(mockResponse.json).toBeCalledWith(expectedResponse);
+        let auth = cdrAuthorisation(options);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
 
@@ -95,13 +89,14 @@ describe('Authorization middleware', () => {
             }
         }
 
-    let options: EndpointConfig[] = [{
-        "requestType": "GET",
-        "requestPath": "/energy/accounts",
-        "minSupportedVersion": 1,
-        "maxSupportedVersion": 4
-    }]
-        cdrAuthorisation(mockRequest as Request, mockResponse as Response, nextFunction, options);
+        let options: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/electricity/servicepoints",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        let auth = cdrAuthorisation(options);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
 });
