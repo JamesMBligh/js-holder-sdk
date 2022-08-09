@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { ErrorEntity } from './models/error-entity';
 import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint, findXFapiRequired } from './cdr-utils';
-import { Endpoint } from './models/endpoint-entity';
+import { DsbEndpoint } from './models/dsb-endpoint-entity';
 
 
 
@@ -174,7 +174,7 @@ function evaluateMinVersionHeader(req: Request,  versionObj: any): ErrorEntity[]
 
 // Set the value for x-fapi-interaction-id
 // If an invalid value is passed with the request, return error object
-function evaluateXFapiHeader(req: Request, res: Response, ep: Endpoint): ErrorEntity[] {
+function evaluateXFapiHeader(req: Request, res: Response, ep: DsbEndpoint): ErrorEntity[] {
     
     let returnedErrors: ErrorEntity[] = [];
    // let ep = getEndpoint(req);

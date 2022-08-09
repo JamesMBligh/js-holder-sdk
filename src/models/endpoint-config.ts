@@ -1,3 +1,4 @@
+
 export interface EndpointConfig {
     requestType: string,
     requestPath: string,

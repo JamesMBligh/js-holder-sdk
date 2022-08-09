@@ -1,15 +1,15 @@
 
 import { Request } from 'express';
-import { Endpoint } from './models/endpoint-entity';
-import energyEndpoints from './data/energy-endpoints.json';
-import bankingEndpoints from './data/banking-endpoints.json';
+import { DsbEndpoint } from './models/dsb-endpoint-entity';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import { EndpointConfig } from './models/endpoint-config';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
 const endpoints = [...energyEndpoints, ...bankingEndpoints];
 
 
-export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): Endpoint | null {
+export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
     // remove the host and assign to urlId
     // incrementally remove part of the urlId until a match is found
     // once a match is found and the last part is a url parameter as per endpoint defintions
@@ -32,7 +32,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
         }
     }
     if (errorList.errors.length == 0)
-        return endpoints[idx] as Endpoint;
+        return endpoints[idx] as DsbEndpoint;
     else
         return null;
 }

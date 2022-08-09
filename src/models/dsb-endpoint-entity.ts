@@ -1,4 +1,4 @@
-export interface Endpoint {
+export interface DsbEndpoint {
     requestType: string,
     requestPath: string,
     authScopesRequired: string | null,

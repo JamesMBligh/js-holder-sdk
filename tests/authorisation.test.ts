@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { cdrAuthorisation } from '../src/cdr-authorisation';
-import energyEndpoints from '../src/data/energy-endpoints.json';
-import bankingEndpoints from '../src/data/banking-endpoints.json'
 import { EndpointConfig } from '../src/models/endpoint-config';
-import { getEndpoint } from '../src/cdr-utils';
 
 describe('Authorization middleware', () => {
     let mockRequest: Partial<Request>;

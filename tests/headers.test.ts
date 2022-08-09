@@ -3,7 +3,6 @@
 import { Request, Response, NextFunction, json} from 'express';
 import { cdrHeaders } from "../src/cdr-header";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { stringify } from 'uuid';
 import { EndpointConfig } from '../src/models/endpoint-config';
 
 describe.skip('Invalid x-v header', function () {
