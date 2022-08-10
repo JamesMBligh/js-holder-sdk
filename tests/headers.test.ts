@@ -5,7 +5,7 @@ import { cdrHeaders } from "../src/cdr-header";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { EndpointConfig } from '../src/models/endpoint-config';
 
-describe.skip('Invalid x-v header', function () {
+describe('Invalid x-v header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
@@ -14,13 +14,6 @@ describe.skip('Invalid x-v header', function () {
     
 
     let options: EndpointConfig[] = [];
-
-    // let options: EndpointConfig[] = [{
-    //     "requestType": "GET",
-    //     "requestPath": "/energy/plans",
-    //     "minSupportedVersion": 1,
-    //     "maxSupportedVersion": 4
-    // }]
 
     beforeEach(() => {
         options = [{
@@ -146,7 +139,7 @@ describe('Valid x-v header', function () {
     });
 });
 
-describe.skip('Invalid x-v-min header', function () {
+describe('Invalid x-v-min header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
@@ -225,7 +218,7 @@ describe.skip('Invalid x-v-min header', function () {
 
 });
 
-describe.skip('Valid x-v-min header', function () {
+describe('Valid x-v-min header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
@@ -305,7 +298,7 @@ describe.skip('Valid x-v-min header', function () {
     });
 });
 
-describe.skip('Validate x-fapi-header header', function () {
+describe('Validate x-fapi-header header', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;

@@ -66,22 +66,22 @@ describe('Utility functions', () => {
 
     });
 
-    test.skip('Find endpoints - parameters at end', async () => {
+    test('Find endpoints - parameters at end', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234//banking/accounts/1234567',
+            url: 'http://locahost:1234/banking/accounts/1234567',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull()
 
     });
 
-    test.skip('Find endpoints - parameters embedded', async () => {
+    test('Find endpoints - parameters embedded', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234//energy/accounts/123456/balance',
+            url: 'http://locahost:1234/energy/accounts/123456/balance',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull()
@@ -95,7 +95,7 @@ describe('Utility functions', () => {
             url: 'http://locahost:1234/energy/all-customer',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
-        expect(ep).toBeNull();
+        expect(ep).toBeUndefined();
 
     });
 });
