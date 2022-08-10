@@ -45,7 +45,7 @@ describe('Invalid x-v header', function () {
             }]
         };
 
-        mockRequest.url = "https://localhost:1234/energy/plans/";
+        mockRequest.url = "/energy/plans/";
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
@@ -62,7 +62,7 @@ describe('Invalid x-v header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': 'some_stupid_stuff'
             }
@@ -83,7 +83,7 @@ describe('Invalid x-v header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1.0'
             }
@@ -130,7 +130,7 @@ describe('Valid x-v header', function () {
             headers: {           
                 'x-v': '1'
             },
-            url: "https://localhost:1234/energy/plans/"
+            url: "/energy/plans/"
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -180,7 +180,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1',
                 'x-min-v': 'some_stupid_stuff'
@@ -203,7 +203,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1',
                 'x-min-v': '1.0'
@@ -254,7 +254,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '1',
                 'x-min-v': '3'
             },
-            url: "https://localhost:1234/energy/plans/"
+            url: "/energy/plans/"
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -267,7 +267,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '5',
                 'x-min-v': '3'
             },
-            url: "https://localhost:1234/energy/plans/"
+            url: "/energy/plans/"
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -288,7 +288,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '6',
                 'x-min-v': '5'
             },
-            url: "https://localhost:1234/energy/plans/"
+            url: "/energy/plans/"
         };
 
         let hdr = cdrHeaders(options);
@@ -308,6 +308,12 @@ describe('Validate x-fapi-header header', function () {
 
     beforeEach(() => {
         nextFunction = jest.fn(); 
+        options = [{
+            "requestType": "GET",
+            "requestPath": "/energy/plans",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
         mockRequest = {
             headers: {
                 'x-v': '1'
@@ -327,10 +333,10 @@ describe('Validate x-fapi-header header', function () {
     });
 
     test('x-fapi value is returned', function () {
-        mockRequest.url = "https://localhost:1234/energy/plans/";
+        mockRequest.url = "/energy/plans/";
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
-        expect(mockResponse.setHeader).toBeCalledWith('x-v', 1);
+        expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -338,7 +344,7 @@ describe('Validate x-fapi-header header', function () {
     test('x-fapi response matches x-fapi request ', function () {
         const mockUUID = 'c24218e2-295c-497a-8085-b9b8038d8baa';
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1',
                 'x-fapi-interaction-id': mockUUID
@@ -353,7 +359,7 @@ describe('Validate x-fapi-header header', function () {
     test('Invalid x-fapi return error ', function () {
         const mockUUID = 'I_AM_INVALID';
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1',
                 'x-fapi-interaction-id': mockUUID
@@ -375,14 +381,14 @@ describe('Validate x-fapi-header header', function () {
 
     test('Missing x-fapi header', function () {
         mockRequest = {
-            url: "https://localhost:1234/energy/plans/",
+            url: "/energy/plans/",
             headers: {
                 'x-v': '1',
             }
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
-        expect(mockResponse.setHeader).toBeCalledWith('x-v', 1);
+        expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
         expect(nextFunction).toBeCalledTimes(1);
     });

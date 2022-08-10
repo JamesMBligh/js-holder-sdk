@@ -20,8 +20,8 @@
     {
         "requestType": "GET",
         "requestPath": "/banking/accounts/{accountId}/balance",
-        "minSupportedVersion": 1,
-        "maxSupportedVersion": 1
+        "minSupportedVersion": 3,
+        "maxSupportedVersion": 5
     },
     {
         "requestType": "GET",

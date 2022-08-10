@@ -45,6 +45,12 @@ describe('Utility functions', () => {
                 "requestPath": "/banking/accounts/{accountId}",
                 "minSupportedVersion": 1,
                 "maxSupportedVersion": 4
+            },
+            {
+                "requestType": "GET",
+                "requestPath": "/banking/accounts",
+                "minSupportedVersion": 1,
+                "maxSupportedVersion": 4
             }
         ];
         errorList  = {
@@ -57,23 +63,24 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234/energy/electricity/servicepoints',
+            url: '/energy/electricity/servicepoints',
         }
 
         //req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull()
-
+        expect(ep?.requestPath).toEqual('/energy/electricity/servicepoints');
     });
 
     test('Find endpoints - parameters at end', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234/banking/accounts/1234567',
+            url: '/banking/accounts/1234567',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull()
+        expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}');
 
     });
 
@@ -81,10 +88,23 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234/energy/accounts/123456/balance',
+            url: '/energy/accounts/123456/balance',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
-        expect(ep).not.toBeNull()
+        expect(ep).not.toBeNull();
+        expect(ep?.requestPath).toEqual('/energy/accounts/{accountId}/balance');
+
+    });
+
+    test('Find endpoints - trailing slash', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            url: '/energy/accounts/123456/balance/',
+        }
+        let ep = getEndpoint(mockRequest as Request, options, errorList);
+        expect(ep).not.toBeNull();
+        expect(ep?.requestPath).toEqual('/energy/accounts/{accountId}/balance');
 
     });
 
@@ -92,7 +112,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: 'http://locahost:1234/energy/all-customer',
+            url: '/energy/all-customer',
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).toBeUndefined();

@@ -18,7 +18,7 @@ describe('Authorization middleware', () => {
          json: jest.fn(),
        }
        mockRequest = { 
-        url: 'http://locahost:1234/energy/electricity/servicepoints'          
+        url: '/energy/electricity/servicepoints'          
     };
         mockResponse = {
              send: jest.fn(),
@@ -37,7 +37,7 @@ describe('Authorization middleware', () => {
             "maxSupportedVersion": 4
         }]
         mockRequest = { 
-            url: 'http://locahost:1234/energy/electricity/servicepoints'          
+            url: '/energy/electricity/servicepoints'          
         };
         let auth = cdrAuthorisation(options);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
@@ -46,7 +46,7 @@ describe('Authorization middleware', () => {
 
     test('No authorization required', async () => {
         mockRequest = { 
-            url: 'http://locahost:1234/energy/plans'          
+            url: '/energy/plans'          
         };
 
         let options: EndpointConfig[] = [{
@@ -69,7 +69,7 @@ describe('Authorization middleware', () => {
         "maxSupportedVersion": 4
     }]
         mockRequest = {
-            url: 'http://locahost:1234/energy/accounts',
+            url: '/energy/accounts',
             headers: {
             }
         }
@@ -80,7 +80,7 @@ describe('Authorization middleware', () => {
 
     test('With "authorization" header', async () => {
         mockRequest = {
-            url: 'http://locahost:1234/energy/electricity/servicepoints',
+            url: '/energy/electricity/servicepoints',
             headers: {
                 'authorization': 'Bearer abc'
             }

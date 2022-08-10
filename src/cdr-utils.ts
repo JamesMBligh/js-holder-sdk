@@ -40,12 +40,13 @@ const endpoints = [...energyEndpoints, ...bankingEndpoints];
 export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
 
     // remove the host and assign to urlId  
+    
     let tmp = req.url.substring(req.url.indexOf('//')+2);  
     let originalPath = tmp.substring(tmp.indexOf('/'));
 
     // create an array with all the path elements
-    let requestUrlArray = originalPath.split('/').splice(1);
-   
+    let requestUrlArray = req.url.split('/').splice(1);
+    requestUrlArray = removeEmptyEntries(requestUrlArray);
     // the search array which will change as the search progresses
     let searchArray: string[] = requestUrlArray.slice();
 
@@ -59,20 +60,25 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
             searchArray.splice(searchArray.length-1, 1) ;  
         }
         else {
-            let tmpArray  = checkForEndpoint(returnerEP as DsbEndpoint);
-            if (tmpArray.length == 0) {
-                if (requestUrlArray.length > searchArray.length) {
-                    searchArray.push(requestUrlArray[searchArray.length]);
-                }
-                else {
-                    searchArray = tmpArray;
-                }
+            if (searchArray.length == requestUrlArray.length) {
+                found = true;
+                searchArray = [];
             }
             else {
-                searchArray = tmpArray;
+                let tmpArray  = checkForEndpoint(returnerEP as DsbEndpoint);
+                if (requestUrlArray.length > searchArray.length) {
+                    if (tmpArray.length > searchArray.length) {
+                        searchArray.push(tmpArray[searchArray.length]);
+                    }
+                    else {
+                        searchArray.push(requestUrlArray[searchArray.length]);
+                    }
+                    
+                } else {
+                    searchArray = tmpArray;
+                }  
+                found = searchArray.length == 0;               
             }
-            found = searchArray.length == 0;
-
         }
     } while(!found && (searchArray.length > 0));
     return returnerEP as DsbEndpoint;
@@ -84,17 +90,40 @@ function arraysAreEqual(a: string[], b: string[]): boolean {
     return equals;
 }
 
+function removeEmptyEntries(arr: string[]): string[] {
+    let returnArray : string[] = [];
+    arr.forEach(elem => {
+        if (elem != null && elem.trim() != '') {
+            returnArray.push(elem);
+        }     
+    });
+    return returnArray;
+}
+
 function checkForEndpoint(ep: DsbEndpoint): string[] {
     let returnPathArray : string[] = [];
     let searchPath = ep.requestPath + '/{';
-    let returnEp = endpoints.find(x => x.requestPath.includes(searchPath));
-    if (returnEp != null) {
-            // create an array with all the path elements
-        returnPathArray = returnEp.requestPath.split('/').splice(1);
+    // get all endpoints which have searchPath in them
+    let returnEpArray  = endpoints.filter(x => x.requestPath.includes(searchPath)) as DsbEndpoint[];
+    if (returnEpArray != null && returnEpArray.length > 0) {
+        // create an array with all the path elements
+        // sort the elements with accorfing the requestPath length
+        returnEpArray.sort(compare);
+        returnPathArray = returnEpArray[0].requestPath.split('/').splice(1);
         return returnPathArray;
     } else {
         return [];
     }
+}
+
+function compare(ep1: DsbEndpoint, ep2: DsbEndpoint) : number {
+    if ( ep1.requestPath.length < ep2.requestPath.length ){
+        return -1;
+      }
+      if ( ep1.requestPath.length > ep2.requestPath.length ){
+        return 1;
+      }
+      return 0;
 }
 
 function buildPath(pathArray: string[], count : number = -1): string | null {

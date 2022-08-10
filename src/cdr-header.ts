@@ -138,6 +138,20 @@ function evaluateMinVersionHeader(req: Request,  versionObj: any): ErrorEntity[]
     // test for missing required header required header is x-v
     let returnedErrors: ErrorEntity[] = [];
     if (req.headers == undefined || req.headers['x-min-v'] == null) {
+        try {
+            var val = req.headers['x-v']?.toString();
+            if (val != undefined) {
+                var version = parseInt(val);
+                versionObj.minSupportedVersion = version;
+                versionObj.minrequestedVersion = version;
+            }
+            else {
+                versionObj.minSupportedVersion = 1;
+            }          
+        } catch (error) {
+            versionObj.minSupportedVersion = 1
+        }
+
         return returnedErrors;
     }
 
@@ -202,17 +216,26 @@ function evaluateXFapiHeader(req: Request, res: Response, ep: DsbEndpoint): Erro
 
 function findMinSupported(req: Request, options: EndpointConfig[]): number {
     try {
-        let idx = options.findIndex(x => req.url.includes(x.requestPath));
-        let ep = options[idx];
+        let errorList : ResponseErrorListV2 = {
+            errors:  []
+        }
+        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
+        var ep = options[idx];
         return ep.minSupportedVersion;
-    } catch(e) {
+    }
+    catch (e) {
         return 1;
     }
 }
 
 function findMaxSupported(req: Request, options: EndpointConfig[]): number {
     try {
-        let idx = options.findIndex(x => req.url.includes(x.requestPath));
+        let errorList : ResponseErrorListV2 = {
+            errors:  []
+        }
+        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         let ep = options[idx];
         return ep.maxSupportedVersion;
     } catch(e) {
