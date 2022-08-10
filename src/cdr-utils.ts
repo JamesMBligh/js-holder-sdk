@@ -8,39 +8,9 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
 const endpoints = [...energyEndpoints, ...bankingEndpoints];
 
-
-// export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
-//     // remove the host and assign to urlId
-//     // incrementally remove part of the urlId until a match is found
-//     // once a match is found and the last part is a url parameter as per endpoint defintions
-//     //  => look forward to identify if there is a url component after the paramenter
-//     //  => there is nothing after the url (ie it matched the enpoint definition exactly)
-//     //  => the last part of the url is a parameter AND it is the last part
-//     //  => the next part of the url is a parameter, but it is NOT the last part
-
-//     let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-//     let idx1 = -1;
-//     if (idx < 0) {
-//         /// this url is not an endpoint supported
-//         errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
-//     }
-//     else {
-//         idx1 = options.findIndex(x => x.requestPath == endpoints[idx].requestPath);
-//         if (idx1 < 0) {
-//             // this is a CDR endpoint but it has not been implemenetd by this server
-//             errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
-//         }
-//     }
-//     if (errorList.errors.length == 0)
-//         return endpoints[idx] as DsbEndpoint;
-//     else
-//         return null;
-// }
-
 export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
 
     // remove the host and assign to urlId  
-    
     let tmp = req.url.substring(req.url.indexOf('//')+2);  
     let originalPath = tmp.substring(tmp.indexOf('/'));
 
@@ -50,13 +20,13 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
     // the search array which will change as the search progresses
     let searchArray: string[] = requestUrlArray.slice();
 
-    let returnerEP = null;
+    let returnEP = null;
     let found: boolean = false;
     do {
         let searchPath = buildPath(searchArray);
-        returnerEP = endpoints.find(x => x.requestPath == searchPath); 
+        returnEP = endpoints.find(x => x.requestPath == searchPath); 
 
-        if (returnerEP == null) {   
+        if (returnEP == null) {   
             searchArray.splice(searchArray.length-1, 1) ;  
         }
         else {
@@ -65,7 +35,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
                 searchArray = [];
             }
             else {
-                let tmpArray  = checkForEndpoint(returnerEP as DsbEndpoint);
+                let tmpArray  = checkForEndpoint(returnEP as DsbEndpoint);
                 if (requestUrlArray.length > searchArray.length) {
                     if (tmpArray.length > searchArray.length) {
                         searchArray.push(tmpArray[searchArray.length]);
@@ -81,7 +51,27 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
             }
         }
     } while(!found && (searchArray.length > 0));
-    return returnerEP as DsbEndpoint;
+    if (returnEP == null) {
+        errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
+    } else {
+        let ep: DsbEndpoint = returnEP as DsbEndpoint;
+        let idx1 = options.findIndex(x => x.requestPath == ep.requestPath);
+        if (idx1 < 0) {
+            // this is a CDR endpoint but it has not been implemenetd by this server
+            errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
+        }       
+    }
+    return returnEP as DsbEndpoint;
+}
+
+export function findXFapiRequired(req: Request): boolean {
+    try {
+        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
+        let ep = endpoints[idx];
+        return ep.requiresXFAPI ??= true;
+    } catch(e) {
+        return true;
+    }
 }
 
 function arraysAreEqual(a: string[], b: string[]): boolean {
@@ -138,12 +128,3 @@ function buildPath(pathArray: string[], count : number = -1): string | null {
 }
 
 
-export function findXFapiRequired(req: Request): boolean {
-    try {
-        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-        let ep = endpoints[idx];
-        return ep.requiresXFAPI ??= true;
-    } catch(e) {
-        return true;
-    }
-}
