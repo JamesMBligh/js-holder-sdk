@@ -12,7 +12,7 @@ describe('Invalid x-v header', function () {
     let nextFunction: NextFunction;
     let mockStatus : Partial<Response>;
     
-
+    let standardsVersion = '/cds-au/v1';
     let options: EndpointConfig[] = [];
 
     beforeEach(() => {
@@ -45,7 +45,7 @@ describe('Invalid x-v header', function () {
             }]
         };
 
-        mockRequest.url = "/energy/plans/";
+        mockRequest.url = `${standardsVersion}/energy/plans/`;
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
@@ -62,7 +62,7 @@ describe('Invalid x-v header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': 'some_stupid_stuff'
             }
@@ -83,7 +83,7 @@ describe('Invalid x-v header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1.0'
             }
@@ -103,6 +103,7 @@ describe('Valid x-v header', function () {
     let nextFunction: NextFunction;
     let mockStatus : Partial<Response>;
     let options: EndpointConfig[] = [];
+    let standardsVersion = '/cds-au/v1';
 
     beforeEach(() => {
         options = [{
@@ -130,7 +131,7 @@ describe('Valid x-v header', function () {
             headers: {           
                 'x-v': '1'
             },
-            url: "/energy/plans/"
+            url: `${standardsVersion}/energy/plans/`
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -145,6 +146,7 @@ describe('Invalid x-v-min header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
     let mockStatus : Partial<Response>;
+    let standardsVersion = '/cds-au/v1';
 
     let options: EndpointConfig[] = [{
         "requestType": "GET",
@@ -180,7 +182,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
                 'x-min-v': 'some_stupid_stuff'
@@ -203,7 +205,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
                 'x-min-v': '1.0'
@@ -224,6 +226,7 @@ describe('Valid x-v-min header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
     let mockStatus : Partial<Response>;
+    let standardsVersion = '/cds-au/v1';
 
     let options: EndpointConfig[] = [{
         "requestType": "GET",
@@ -254,7 +257,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '1',
                 'x-min-v': '3'
             },
-            url: "/energy/plans/"
+            url: `${standardsVersion}/energy/plans/`
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -267,7 +270,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '5',
                 'x-min-v': '3'
             },
-            url: "/energy/plans/"
+            url: `${standardsVersion}/energy/plans/`
         };
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
@@ -288,7 +291,7 @@ describe('Valid x-v-min header', function () {
                 'x-v': '6',
                 'x-min-v': '5'
             },
-            url: "/energy/plans/"
+            url: `${standardsVersion}/energy/plans/`
         };
 
         let hdr = cdrHeaders(options);
@@ -305,6 +308,7 @@ describe('Validate x-fapi-header header', function () {
     let nextFunction: NextFunction; 
     let mockStatus : Partial<Response>;
     let options: EndpointConfig[] = [];
+    let standardsVersion = '/cds-au/v1';
 
     beforeEach(() => {
         nextFunction = jest.fn(); 
@@ -333,7 +337,7 @@ describe('Validate x-fapi-header header', function () {
     });
 
     test('x-fapi value is returned', function () {
-        mockRequest.url = "/energy/plans/";
+        mockRequest.url = `${standardsVersion}/energy/plans/`;
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
@@ -344,7 +348,7 @@ describe('Validate x-fapi-header header', function () {
     test('x-fapi response matches x-fapi request ', function () {
         const mockUUID = 'c24218e2-295c-497a-8085-b9b8038d8baa';
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
                 'x-fapi-interaction-id': mockUUID
@@ -359,7 +363,7 @@ describe('Validate x-fapi-header header', function () {
     test('Invalid x-fapi return error ', function () {
         const mockUUID = 'I_AM_INVALID';
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
                 'x-fapi-interaction-id': mockUUID
@@ -381,7 +385,7 @@ describe('Validate x-fapi-header header', function () {
 
     test('Missing x-fapi header', function () {
         mockRequest = {
-            url: "/energy/plans/",
+            url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
             }

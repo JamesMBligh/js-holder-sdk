@@ -15,6 +15,8 @@ describe('Utility functions', () => {
     let options: EndpointConfig[] = [];
     let errorList : ResponseErrorListV2;
 
+    let standardsVersion = '/cds-au/v1';
+
     beforeEach(() => {
         nextFunction = jest.fn() ;
         mockStatus = {
@@ -63,7 +65,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: '/energy/electricity/servicepoints',
+            url: `${standardsVersion}/energy/electricity/servicepoints`,
         }
 
         //req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 
@@ -76,7 +78,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: '/banking/accounts/1234567',
+            url: `${standardsVersion}/banking/accounts/1234567`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull()
@@ -88,7 +90,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: '/energy/accounts/123456/balance',
+            url: `${standardsVersion}/energy/accounts/123456/balance`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull();
@@ -100,7 +102,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: '/energy/accounts/123456/balance/',
+            url: `${standardsVersion}/energy/accounts/123456/balance/`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).not.toBeNull();
@@ -112,7 +114,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
-            url: '/energy/all-customer',
+            url: `${standardsVersion}/energy/all-customer`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
         expect(ep).toBeUndefined();

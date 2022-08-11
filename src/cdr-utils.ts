@@ -14,8 +14,21 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
     let tmp = req.url.substring(req.url.indexOf('//')+2);  
     let originalPath = tmp.substring(tmp.indexOf('/'));
 
+
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
+    // ensure that the cds-au/v1 exists
+    if (requestUrlArray.length < 3) {
+        // this cannot be a CDR endpoint
+        errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+        return null;
+    }
+    if (requestUrlArray[0] != 'cds-au' || requestUrlArray[1] != 'v1') {
+         // this cannot be a CDR endpoint
+         errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+         return null;       
+    }
+    requestUrlArray = requestUrlArray.slice(2);
     requestUrlArray = removeEmptyEntries(requestUrlArray);
     // the search array which will change as the search progresses
     let searchArray: string[] = requestUrlArray.slice();
@@ -51,6 +64,8 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
             }
         }
     } while(!found && (searchArray.length > 0));
+
+    // set the error message if no endpoint was found or not implemented
     if (returnEP == null) {
         errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
     } else {
@@ -61,6 +76,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
             errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
         }       
     }
+
     return returnEP as DsbEndpoint;
 }
 
@@ -107,10 +123,12 @@ function checkForEndpoint(ep: DsbEndpoint): string[] {
 }
 
 function compare(ep1: DsbEndpoint, ep2: DsbEndpoint) : number {
-    if ( ep1.requestPath.length < ep2.requestPath.length ){
+    let arr1 = ep1.requestPath.split('/').splice(1);
+    let arr2 = ep2.requestPath.split('/').splice(1);
+    if ( arr1.length < arr2.length ){
         return -1;
       }
-      if ( ep1.requestPath.length > ep2.requestPath.length ){
+      if (arr1.length > arr2.length ){
         return 1;
       }
       return 0;

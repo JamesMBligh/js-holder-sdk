@@ -45,8 +45,6 @@ export function cdrHeaders(options: EndpointConfig[]) {
             } ;
             res.setHeader('x-v', maxSupportedVersion);
     
-    
-    
             var versionXFapiValidationErrors = evaluateXFapiHeader(req, res, ep);
             if (versionXFapiValidationErrors.length > 0) {
                 versionXFapiValidationErrors.forEach(e => {

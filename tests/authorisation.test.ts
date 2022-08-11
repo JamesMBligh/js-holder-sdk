@@ -7,6 +7,7 @@ describe('Authorization middleware', () => {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
     let mockStatus : Partial<Response>;
+    let standardsVersion = '/cds-au/v1';
 
     let options: EndpointConfig[] = [];
 
@@ -37,7 +38,7 @@ describe('Authorization middleware', () => {
             "maxSupportedVersion": 4
         }]
         mockRequest = { 
-            url: '/energy/electricity/servicepoints'          
+            url: `${standardsVersion}/energy/electricity/servicepoints`          
         };
         let auth = cdrAuthorisation(options);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
@@ -46,7 +47,7 @@ describe('Authorization middleware', () => {
 
     test('No authorization required', async () => {
         mockRequest = { 
-            url: '/energy/plans'          
+            url: `${standardsVersion}/energy/plans`         
         };
 
         let options: EndpointConfig[] = [{
@@ -69,7 +70,7 @@ describe('Authorization middleware', () => {
         "maxSupportedVersion": 4
     }]
         mockRequest = {
-            url: '/energy/accounts',
+            url: `${standardsVersion}/energy/accounts`,
             headers: {
             }
         }
@@ -80,7 +81,7 @@ describe('Authorization middleware', () => {
 
     test('With "authorization" header', async () => {
         mockRequest = {
-            url: '/energy/electricity/servicepoints',
+            url: `${standardsVersion}/energy/electricity/servicepoints`,
             headers: {
                 'authorization': 'Bearer abc'
             }
