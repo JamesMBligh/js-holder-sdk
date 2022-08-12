@@ -38,7 +38,7 @@ describe('Utility functions', () => {
             },
             {
                 "requestType": "GET",
-                "requestPath": "/banking/accounts/{accountId}/balance",
+                "requestPath": "/energy/accounts/{accountId}/balance",
                 "minSupportedVersion": 1,
                 "maxSupportedVersion": 4
             },
@@ -65,6 +65,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/electricity/servicepoints`,
         }
 
@@ -78,6 +79,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/banking/accounts/1234567`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
@@ -90,6 +92,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/accounts/123456/balance`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
@@ -102,6 +105,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/accounts/123456/balance/`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
@@ -114,6 +118,7 @@ describe('Utility functions', () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/all-customer`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);

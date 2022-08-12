@@ -46,6 +46,7 @@ describe('Invalid x-v header', function () {
         };
 
         mockRequest.url = `${standardsVersion}/energy/plans/`;
+        mockRequest.method = 'GET';
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
@@ -67,6 +68,7 @@ describe('Invalid x-v header', function () {
                 'x-v': 'some_stupid_stuff'
             }
         };
+        mockRequest.method = 'GET';
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
@@ -88,6 +90,7 @@ describe('Invalid x-v header', function () {
                 'x-v': '1.0'
             }
         };
+        mockRequest.method = 'GET';
         let hdr = cdrHeaders(options);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
@@ -128,6 +131,7 @@ describe('Valid x-v header', function () {
 
     test('x-v value exists', function () {
         mockRequest = {
+            method: 'GET',
             headers: {           
                 'x-v': '1'
             },
@@ -182,6 +186,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
@@ -205,6 +210,7 @@ describe('Invalid x-v-min header', function () {
         };
         // need to set the header for our mock
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
@@ -253,6 +259,7 @@ describe('Valid x-v-min header', function () {
 
     test('x-min-v value is greater than x-v', function () {
         mockRequest = {
+            method: 'GET',
             headers: {           
                 'x-v': '1',
                 'x-min-v': '3'
@@ -265,7 +272,9 @@ describe('Valid x-v-min header', function () {
     });
 
     test('x-min-v is supported', function () {
+        
         mockRequest = {
+            method: 'GET',
             headers: {           
                 'x-v': '5',
                 'x-min-v': '3'
@@ -287,6 +296,7 @@ describe('Valid x-v-min header', function () {
             }]
         };
         mockRequest = {
+            method: 'GET',
             headers: {           
                 'x-v': '6',
                 'x-min-v': '5'
@@ -319,6 +329,7 @@ describe('Validate x-fapi-header header', function () {
             "maxSupportedVersion": 4
         }]
         mockRequest = {
+            method: 'GET',
             headers: {
                 'x-v': '1'
             }
@@ -348,6 +359,7 @@ describe('Validate x-fapi-header header', function () {
     test('x-fapi response matches x-fapi request ', function () {
         const mockUUID = 'c24218e2-295c-497a-8085-b9b8038d8baa';
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
@@ -363,6 +375,7 @@ describe('Validate x-fapi-header header', function () {
     test('Invalid x-fapi return error ', function () {
         const mockUUID = 'I_AM_INVALID';
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
@@ -385,6 +398,7 @@ describe('Validate x-fapi-header header', function () {
 
     test('Missing x-fapi header', function () {
         mockRequest = {
+            method: 'GET',
             url: `${standardsVersion}/energy/plans/`,
             headers: {
                 'x-v': '1',
@@ -399,3 +413,74 @@ describe('Validate x-fapi-header header', function () {
 
 });
 
+
+describe('Check media type', function () {
+
+    let mockRequest: Partial<Request>;
+    let mockResponse: Partial<Response>;
+    let nextFunction: NextFunction;
+    let mockStatus : Partial<Response>;
+    let options: EndpointConfig[] = [];
+    let standardsVersion = '/cds-au/v1';
+
+    beforeEach(() => {
+        options = [{
+            "requestType": "POST",
+            "requestPath": "/energy/accounts/balances",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        nextFunction = jest.fn() 
+        mockRequest = {};
+        mockStatus = {
+           send: jest.fn(),
+           setHeader: jest.fn(),
+           json: jest.fn(),
+        }
+        mockResponse = {
+             send: jest.fn(),
+             setHeader: jest.fn(),
+             json: jest.fn(),
+             status: jest.fn().mockImplementation(() =>  mockStatus)
+     }});
+
+    test('media type is valid', function () {
+        mockRequest = {
+            method: 'POST',
+            headers: {           
+                'x-v': '1'
+            },
+            url: `${standardsVersion}/energy/accounts/balances`,
+            body: `{
+                "data": {
+                  "accountIds": []
+                },
+                "meta": {}
+              }`
+        };
+        let hdr = cdrHeaders(options);
+        hdr(mockRequest as Request, mockResponse as Response, nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });
+
+    test('media type is NOT valid', function () {
+        mockRequest = {
+            method: 'POST',
+            headers: {           
+                'x-v': '1'
+            },
+            url: `${standardsVersion}/energy/accounts/balances`,
+            body: `{
+                "data": 
+                  "accountIds": [
+                    "string"
+                  ]
+                },
+                "meta": {}
+              }`
+        };
+        let hdr = cdrHeaders(options);
+        hdr(mockRequest as Request, mockResponse as Response, nextFunction);
+        expect(mockResponse.status).toBeCalledWith(415);
+    });
+});

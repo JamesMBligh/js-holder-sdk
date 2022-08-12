@@ -25,6 +25,15 @@ export function cdrHeaders(options: EndpointConfig[]) {
         let ep = getEndpoint(req, options, errorList);
 
         if (ep != null) {
+
+            // if this is a POST request check media type
+            if (ep.requestType == 'POST') {
+                if (!isJsonString(req.body))
+                {
+                    res.status(401).json();
+                    return;
+                }
+            }
             let requestVersionObject = {
                 requestedVersion : 1,
                 minrequestedVersion : 1        
@@ -55,6 +64,7 @@ export function cdrHeaders(options: EndpointConfig[]) {
             if (requestVersionObject.minrequestedVersion > requestVersionObject.requestedVersion) {
                 requestVersionObject.minrequestedVersion = requestVersionObject.requestedVersion;
             }
+
             if (errorList != null && errorList.errors.length > 0) {
                 res.status(400).json(errorList);
                 return;
@@ -239,4 +249,13 @@ function findMaxSupported(req: Request, options: EndpointConfig[]): number {
     } catch(e) {
         return 1;
     }
+}
+
+function isJsonString(str: string): boolean {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
 }

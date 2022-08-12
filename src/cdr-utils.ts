@@ -37,7 +37,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
     let found: boolean = false;
     do {
         let searchPath = buildPath(searchArray);
-        returnEP = endpoints.find(x => x.requestPath == searchPath); 
+        returnEP = endpoints.find(x => x.requestPath == searchPath && x.requestType == req.method); 
 
         if (returnEP == null) {   
             searchArray.splice(searchArray.length-1, 1) ;  
