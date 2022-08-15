@@ -30,7 +30,7 @@ export function cdrHeaders(options: EndpointConfig[]) {
             if (ep.requestType == 'POST') {
                 if (!isJsonString(req.body))
                 {
-                    res.status(401).json();
+                    res.status(415).json();
                     return;
                 }
             }

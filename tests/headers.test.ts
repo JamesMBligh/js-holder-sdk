@@ -463,7 +463,7 @@ describe('Check media type', function () {
         expect(nextFunction).toBeCalledTimes(1);
     });
 
-    test('media type is NOT valid', function () {
+    test('Media type is NOT valid', function () {
         mockRequest = {
             method: 'POST',
             headers: {           
