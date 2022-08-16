@@ -1,0 +1,14 @@
+[
+    {
+        "requestType": "GET",
+        "requestUrl": "/energy/plans",
+        "minSupported": 1,
+        "maxSupported": 1
+    },
+    {
+        "requestType": "GET",
+        "requestUrl": "/energy/electricity/servicepoints",
+        "minSupported": 1,
+        "maxSupported": 1
+    }
+]

@@ -17,7 +17,6 @@ export function cdrJwtScopes(authOptions: DsbAuthConfig) {
         // check if the right scope exist
         let token = req.headers.authorization;
         let decoded = null;
-       // let receivedScopes = [];
         try {
             decoded = jwt_decode(token) as any;
             if (authOptions.scopeFormat == 'STRING') {
@@ -32,7 +31,6 @@ export function cdrJwtScopes(authOptions: DsbAuthConfig) {
             next();
             return;                 
         }
-        //req.scopes = receivedScopes;
         next(); 
     }
 }
