@@ -1,19 +1,12 @@
 
 import { Request, Response, NextFunction } from 'express';
-import defaultEnergyEndpoints from './data/default-energy.json';
-import defaultBankingEndpoints from './data/default-banking.json';
-import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint } from './cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import  jwt_decode from  "jwt-decode";
 import { DsbRequest } from './models/dsb-request';
 import { DsbResponse } from './models/dsb-response';
-import { DsbAuthConfig } from './models/dsb-auth-config';
 import { CdrConfig } from './models/cdr-config';
 
 
-
-const defaultEndpoints = [...defaultEnergyEndpoints, ...defaultBankingEndpoints] as EndpointConfig[];
 
 
 export function cdrAuthorisation(authOptions: CdrConfig): any {

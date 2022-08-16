@@ -10,6 +10,8 @@ import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
+import defaultEnergyEndpoints from './data/default-energy.json';
+import defaultBankingEndpoints from './data/default-banking.json';
 
 
 
@@ -20,7 +22,6 @@ export function cdrHeaders(options: CdrConfig) {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        
         let minSupportedVersion = findMinSupported(req, options.endpoints);
         let maxSupportedVersion = findMaxSupported(req, options.endpoints);
         let xfapiIsRequired: boolean = findXFapiRequired(req);
