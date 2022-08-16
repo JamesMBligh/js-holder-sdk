@@ -1,39 +1,34 @@
 
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, request } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
+import zlib from 'zlib';
 import { ErrorEntity } from './models/error-entity';
 import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
+import { DsbResponse } from './models/dsb-response';
+import { CdrConfig } from './models/cdr-config';
 
 
 
-export function cdrHeaders(options: EndpointConfig[]) {
+export function cdrHeaders(options: CdrConfig) {
     
-    return function headers(req: Request, res: Response, next: NextFunction) {
+    return function headers(req: Request, res: DsbResponse, next: NextFunction) {
 
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
         
-        let minSupportedVersion = findMinSupported(req, options);
-        let maxSupportedVersion = findMaxSupported(req, options);
+        let minSupportedVersion = findMinSupported(req, options.endpoints);
+        let maxSupportedVersion = findMaxSupported(req, options.endpoints);
         let xfapiIsRequired: boolean = findXFapiRequired(req);
 
-        let ep = getEndpoint(req, options, errorList);
+        let ep = getEndpoint(req, options.endpoints, errorList);
 
         if (ep != null) {
 
-            // if this is a POST request check media type
-            if (ep.requestType == 'POST') {
-                if (!isJsonString(req.body))
-                {
-                    res.status(415).json();
-                    return;
-                }
-            }
             let requestVersionObject = {
                 requestedVersion : 1,
                 minrequestedVersion : 1        
@@ -91,8 +86,6 @@ export function cdrHeaders(options: EndpointConfig[]) {
         next(); 
     } 
 }
-
-
 
 // Evaluate x-v header for presence and valid format. Create an error object for any issues founf
 // Set the value versionObj.requestedVersion

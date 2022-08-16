@@ -4,6 +4,7 @@ import { Request, Response, NextFunction, json} from 'express';
 import { cdrHeaders } from "../src/cdr-header";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { EndpointConfig } from '../src/models/endpoint-config';
+import { CdrConfig } from '../src/models/cdr-config';
 
 describe('Invalid x-v header', function () {
 
@@ -13,16 +14,17 @@ describe('Invalid x-v header', function () {
     let mockStatus : Partial<Response>;
     
     let standardsVersion = '/cds-au/v1';
-    let options: EndpointConfig[] = [];
+    let endpoints: EndpointConfig[] = [];
 
     beforeEach(() => {
-        options = [{
+        endpoints = [{
             "requestType": "GET",
             "requestPath": "/energy/plans",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
-        }]
-       nextFunction = jest.fn() 
+        }];
+
+       nextFunction = jest.fn() ;
        mockRequest = {};
        mockStatus = {
           send: jest.fn(),
@@ -47,7 +49,10 @@ describe('Invalid x-v header', function () {
 
         mockRequest.url = `${standardsVersion}/energy/plans/`;
         mockRequest.method = 'GET';
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -69,7 +74,10 @@ describe('Invalid x-v header', function () {
             }
         };
         mockRequest.method = 'GET';
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -91,7 +99,10 @@ describe('Invalid x-v header', function () {
             }
         };
         mockRequest.method = 'GET';
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -105,11 +116,11 @@ describe('Valid x-v header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction;
     let mockStatus : Partial<Response>;
-    let options: EndpointConfig[] = [];
+    let endpoints: EndpointConfig[] = [];
     let standardsVersion = '/cds-au/v1';
 
     beforeEach(() => {
-        options = [{
+        endpoints = [{
             "requestType": "GET",
             "requestPath": "/energy/plans",
             "minSupportedVersion": 1,
@@ -137,7 +148,10 @@ describe('Valid x-v header', function () {
             },
             url: `${standardsVersion}/energy/plans/`
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
         //expect(mockResponse.status).toBeCalledWith(200);
@@ -152,7 +166,7 @@ describe('Invalid x-v-min header', function () {
     let mockStatus : Partial<Response>;
     let standardsVersion = '/cds-au/v1';
 
-    let options: EndpointConfig[] = [{
+    let endpoints: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
         "minSupportedVersion": 1,
@@ -193,7 +207,10 @@ describe('Invalid x-v-min header', function () {
                 'x-min-v': 'some_stupid_stuff'
             }
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -217,7 +234,10 @@ describe('Invalid x-v-min header', function () {
                 'x-min-v': '1.0'
             }
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -234,7 +254,7 @@ describe('Valid x-v-min header', function () {
     let mockStatus : Partial<Response>;
     let standardsVersion = '/cds-au/v1';
 
-    let options: EndpointConfig[] = [{
+    let endpoints: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/plans",
         "minSupportedVersion": 1,
@@ -266,7 +286,10 @@ describe('Valid x-v-min header', function () {
             },
             url: `${standardsVersion}/energy/plans/`
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -281,7 +304,10 @@ describe('Valid x-v-min header', function () {
             },
             url: `${standardsVersion}/energy/plans/`
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -304,7 +330,10 @@ describe('Valid x-v-min header', function () {
             url: `${standardsVersion}/energy/plans/`
         };
 
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(406);
@@ -317,12 +346,12 @@ describe('Validate x-fapi-header header', function () {
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction; 
     let mockStatus : Partial<Response>;
-    let options: EndpointConfig[] = [];
+    let endpoints: EndpointConfig[] = [];
     let standardsVersion = '/cds-au/v1';
 
     beforeEach(() => {
         nextFunction = jest.fn(); 
-        options = [{
+        endpoints = [{
             "requestType": "GET",
             "requestPath": "/energy/plans",
             "minSupportedVersion": 1,
@@ -349,7 +378,10 @@ describe('Validate x-fapi-header header', function () {
 
     test('x-fapi value is returned', function () {
         mockRequest.url = `${standardsVersion}/energy/plans/`;
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
@@ -366,7 +398,10 @@ describe('Validate x-fapi-header header', function () {
                 'x-fapi-interaction-id': mockUUID
             }
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith("x-fapi-interaction-id", mockUUID);
         expect(nextFunction).toBeCalledTimes(1);
@@ -389,7 +424,10 @@ describe('Validate x-fapi-header header', function () {
                 detail: 'x-fapi-interaction-id'
             }]
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -404,7 +442,10 @@ describe('Validate x-fapi-header header', function () {
                 'x-v': '1',
             }
         };
-        let hdr = cdrHeaders(options);
+        let hdrConfig: CdrConfig = {
+            endpoints: endpoints
+        }
+        let hdr = cdrHeaders(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
@@ -413,74 +454,3 @@ describe('Validate x-fapi-header header', function () {
 
 });
 
-
-describe('Check media type', function () {
-
-    let mockRequest: Partial<Request>;
-    let mockResponse: Partial<Response>;
-    let nextFunction: NextFunction;
-    let mockStatus : Partial<Response>;
-    let options: EndpointConfig[] = [];
-    let standardsVersion = '/cds-au/v1';
-
-    beforeEach(() => {
-        options = [{
-            "requestType": "POST",
-            "requestPath": "/energy/accounts/balances",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        nextFunction = jest.fn() 
-        mockRequest = {};
-        mockStatus = {
-           send: jest.fn(),
-           setHeader: jest.fn(),
-           json: jest.fn(),
-        }
-        mockResponse = {
-             send: jest.fn(),
-             setHeader: jest.fn(),
-             json: jest.fn(),
-             status: jest.fn().mockImplementation(() =>  mockStatus)
-     }});
-
-    test('media type is valid', function () {
-        mockRequest = {
-            method: 'POST',
-            headers: {           
-                'x-v': '1'
-            },
-            url: `${standardsVersion}/energy/accounts/balances`,
-            body: `{
-                "data": {
-                  "accountIds": []
-                },
-                "meta": {}
-              }`
-        };
-        let hdr = cdrHeaders(options);
-        hdr(mockRequest as Request, mockResponse as Response, nextFunction);
-        expect(nextFunction).toBeCalledTimes(1);
-    });
-
-    test('Media type is NOT valid', function () {
-        mockRequest = {
-            method: 'POST',
-            headers: {           
-                'x-v': '1'
-            },
-            url: `${standardsVersion}/energy/accounts/balances`,
-            body: `{
-                "data": 
-                  "accountIds": [
-                    "string"
-                  ]
-                },
-                "meta": {}
-              }`
-        };
-        let hdr = cdrHeaders(options);
-        hdr(mockRequest as Request, mockResponse as Response, nextFunction);
-        expect(mockResponse.status).toBeCalledWith(415);
-    });
-});

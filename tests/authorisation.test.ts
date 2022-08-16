@@ -1,6 +1,7 @@
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { NextFunction, Response } from 'express';
 import { cdrAuthorisation } from '../src/cdr-authorisation';
+import { CdrConfig } from '../src/models/cdr-config';
 import { DsbRequest } from '../src/models/dsb-request';
 import { DsbResponse } from '../src/models/dsb-response';
 import { EndpointConfig } from '../src/models/endpoint-config';
@@ -34,7 +35,7 @@ describe('Authorization middleware', () => {
 
     test('Without headers', async () => {
 
-        let options: EndpointConfig[] = [{
+        let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
             "requestPath": "/energy/electricity/servicepoints",
             "minSupportedVersion": 1,
@@ -44,7 +45,11 @@ describe('Authorization middleware', () => {
             method: 'GET',
             url: `${standardsVersion}/energy/electricity/servicepoints`          
         };
-        let auth = cdrAuthorisation(options);
+        let authConfig: CdrConfig = {
+            
+            endpoints: endpoints
+        }
+        let auth = cdrAuthorisation(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
@@ -55,20 +60,24 @@ describe('Authorization middleware', () => {
             url: `${standardsVersion}/energy/plans`         
         };
 
-        let options: EndpointConfig[] = [{
+        let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
             "requestPath": "/energy/plans",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }]
-        let auth = cdrAuthorisation(options);
+        let authConfig: CdrConfig = {
+            
+            endpoints: endpoints
+        }
+        let auth = cdrAuthorisation(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Without "authorization" header', async () => {
 
-    let options: EndpointConfig[] = [{
+    let endpoints: EndpointConfig[] = [{
         "requestType": "GET",
         "requestPath": "/energy/accounts",
         "minSupportedVersion": 1,
@@ -80,7 +89,11 @@ describe('Authorization middleware', () => {
             headers: {
             }
         }
-        let auth = cdrAuthorisation(options);
+        let authConfig: CdrConfig = {
+            
+            endpoints: endpoints
+        }
+        let auth = cdrAuthorisation(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
@@ -102,13 +115,21 @@ describe('Authorization middleware', () => {
             ]
         }
 
-        let options: EndpointConfig[] = [{
+        mockResponse = {
+            
+        }
+
+        let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
             "requestPath": "/energy/accounts",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }]
-        let auth = cdrAuthorisation(options);
+        let authConfig: CdrConfig = {
+            
+            endpoints: endpoints
+        }
+        let auth = cdrAuthorisation(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -129,14 +150,18 @@ describe('Authorization middleware', () => {
             }
         }
 
-        let options: EndpointConfig[] = [{
+        let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
             "requestPath": "/energy/electricity/servicepoints",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }];
 
-        let auth = cdrAuthorisation(options);
+        let authConfig: CdrConfig = {
+            
+            endpoints: endpoints
+        }
+        let auth = cdrAuthorisation(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(403);

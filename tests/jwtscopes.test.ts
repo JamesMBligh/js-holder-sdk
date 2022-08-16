@@ -1,7 +1,8 @@
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { NextFunction, Response } from 'express';
 import { cdrAuthorisation } from '../src/cdr-authorisation';
-import { cdrJwtScopesListSeparated } from '../src/cdr-jwtscopes';
+import { cdrJwtScopes } from '../src/cdr-jwtscopes';
+import { DsbAuthConfig } from '../src/models/dsb-auth-config';
 import { DsbRequest } from '../src/models/dsb-request';
 import { DsbResponse } from '../src/models/dsb-response';
 import { EndpointConfig } from '../src/models/endpoint-config';
@@ -43,13 +44,19 @@ describe('Authorization middleware', () => {
             }
         }
 
-        let options: EndpointConfig[] = [{
+        let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
             "requestPath": "/energy/accounts",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }]
-        let auth = cdrJwtScopesListSeparated(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
+
+        let authConfig: DsbAuthConfig = {
+            endpoints: endpoints,
+            scopeFormat: 'LIST'
+        }
+        let scopes = cdrJwtScopes(authConfig);
+        scopes(mockRequest as DsbRequest, mockResponse as Response, nextFunction as NextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
     });        
 });

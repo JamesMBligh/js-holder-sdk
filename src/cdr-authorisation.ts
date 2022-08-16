@@ -8,20 +8,22 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import  jwt_decode from  "jwt-decode";
 import { DsbRequest } from './models/dsb-request';
 import { DsbResponse } from './models/dsb-response';
+import { DsbAuthConfig } from './models/dsb-auth-config';
+import { CdrConfig } from './models/cdr-config';
 
 
 
-const defaultOptions = [...defaultEnergyEndpoints, ...defaultBankingEndpoints] as EndpointConfig[];
+const defaultEndpoints = [...defaultEnergyEndpoints, ...defaultBankingEndpoints] as EndpointConfig[];
 
 
-export function cdrAuthorisation(authOptions: EndpointConfig[] = defaultOptions): any {
+export function cdrAuthorisation(authOptions: CdrConfig): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
 
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let ep = getEndpoint(req, authOptions, errorList);
+        let ep = getEndpoint(req, authOptions.endpoints, errorList);
         if (ep != null) {
             // if there no authorisation required
             if (ep.authScopesRequired == null) {
