@@ -29,8 +29,15 @@ export function cdrAuthorisation(authOptions: CdrConfig): any {
                 return;
             }
 
+            // If there is no scopes property on the request object, go the next()
+            if (req?.scopes == undefined) {
+                next();
+                return;
+            }
+
             // check if the right scope exist        
-            let availableScopes  = req.scopes;
+            let availableScopes  = req?.scopes;
+
             // read the scope and compare to the scope required
             if (availableScopes == undefined || availableScopes?.indexOf(ep.authScopesRequired) == -1) {
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
