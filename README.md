@@ -69,3 +69,34 @@ The middleware will expect a configuration object.
 | ----------- | ----------- |
 | The access token from the IdAM is a JWT and scopes are an array of strings    | The request object will be extended      |
 | The access token from the IdAM is a JWT and scopes are a space separated string   |The request object will be extended  |
+
+### Configuration Object
+
+The middleware functions `cdrHeaders, cdrAuthorisation` and `cdrJwtScopes`  will expect a configuration object (CdrConfig). This object should define each endpoint implemented by the application.
+Each endpoint must be defined by the request type (GET/POST/DELETE) and the path as defined in the published [standard](https://consumerdatastandardsaustralia.github.io/standards/#introduction)
+
+```
+const implementedEndpoints = [
+    {
+        "requestType": 
+        "GET",
+        "requestPath": "/banking/payments/scheduled",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 1
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/banking/accounts/{accountId}/balance",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 1
+    },
+…etc
+
+
+const dsbOptions: CdrConfig = {
+    endpoints: implementedEndpoints
+}
+
+app.use(cdrHeaders(dsbOptions))
+
+```

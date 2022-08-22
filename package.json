@@ -1,7 +1,7 @@
 {
-  "name": "dsb-middleware",
+  "name": "@cds-au/cdr-helper",
   "version": "1.0.0",
-  "description": "A basic NodeJS project in Typescript",
+  "description": "NodeJS middleware to handle error generation in line with Australian Consumer Data Standards technical specifications",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
