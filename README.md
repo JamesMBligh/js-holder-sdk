@@ -29,7 +29,7 @@ This packages is a boilerplate implementation of these common requirements and i
 
 The key functions exported by this package are `cdrHeaders, cdrAuthorisation, and cdrJwtScopes`.
 
-<img src="./images/MiddleWareDesign.jpg" width=600>
+![Design](/images/MiddleWareDesign.jpg "Middleware pipeline")
 
 ### cdrHeaders
 
@@ -75,7 +75,7 @@ The middleware will expect a configuration object.
 The middleware functions `cdrHeaders, cdrAuthorisation` and `cdrJwtScopes`  will expect a configuration object (CdrConfig). This object should define each endpoint implemented by the application.
 Each endpoint must be defined by the request type (GET/POST/DELETE) and the path as defined in the published [standard](https://consumerdatastandardsaustralia.github.io/standards/#introduction)
 
-```
+```javascript
 const implementedEndpoints = [
     {
         "requestType": 
@@ -100,7 +100,7 @@ const dsbOptions: CdrConfig = {
 app.use(cdrHeaders(dsbOptions))
 
 ```
+
 ### Demo Project
 
-The cdr-helper-demo project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
-
+The [cdr-helper-demo](https://github.com/ConsumerDataStandardsAustralia/cdr-helper-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
