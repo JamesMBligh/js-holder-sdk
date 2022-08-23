@@ -1,4 +1,4 @@
-# DSB Middleware
+# CDR Helper
 
 ## Disclaimer
 
@@ -100,3 +100,7 @@ const dsbOptions: CdrConfig = {
 app.use(cdrHeaders(dsbOptions))
 
 ```
+### Demo Project
+
+The cdr-helper-demo project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
+
