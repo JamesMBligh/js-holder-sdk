@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from 'express';
-import { cdrAuthorisation } from '../src/cdr-authorisation';
 import energyEndpoints from '../src/data/cdr-energy-endpoints.json';
 import bankingEndpoints from '../src/data/cdr-banking-endpoints.json'
 import { EndpointConfig } from '../src/models/endpoint-config';

@@ -1,21 +1,18 @@
 
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { Request, Response, NextFunction, request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { validate as uuidValidate } from 'uuid';
 import { v4 as uuidv4 } from 'uuid';
-import zlib from 'zlib';
 import { ErrorEntity } from './models/error-entity';
 import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
-import defaultEnergyEndpoints from './data/default-energy.json';
-import defaultBankingEndpoints from './data/default-banking.json';
 
 
 
-export function cdrHeaders(options: CdrConfig) {
+export function cdrHeaderValidator(options: CdrConfig) {
     
     return function headers(req: Request, res: DsbResponse, next: NextFunction) {
 
@@ -71,7 +68,7 @@ export function cdrHeaders(options: CdrConfig) {
                     let errorResponse  = {
                         code: 'urn:au-cds:error:cds-all:Header/UnsupportedVersion',
                         title: 'Unsupported Version',
-                        detail: `${requestVersionObject.minrequestedVersion}`
+                        detail: `minimum version: ${minSupportedVersion}, maximum version: ${maxSupportedVersion}`
                     }
                     errorList.errors.push(errorResponse);
                     res.status(406).json(errorList);

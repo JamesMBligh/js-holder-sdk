@@ -1,7 +1,7 @@
 
 
 import { Request, Response, NextFunction, json} from 'express';
-import { cdrHeaders } from "../src/cdr-header";
+import { cdrHeaderValidator } from "../src/cdr-header-validator";
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { EndpointConfig } from '../src/models/endpoint-config';
 import { CdrConfig } from '../src/models/cdr-config';
@@ -52,7 +52,7 @@ describe('Invalid x-v header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -77,7 +77,7 @@ describe('Invalid x-v header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -102,7 +102,7 @@ describe('Invalid x-v header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -151,7 +151,7 @@ describe('Valid x-v header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
         //expect(mockResponse.status).toBeCalledWith(200);
@@ -210,7 +210,7 @@ describe('Invalid x-v-min header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -237,7 +237,7 @@ describe('Invalid x-v-min header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -289,7 +289,7 @@ describe('Valid x-v-min header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -307,7 +307,7 @@ describe('Valid x-v-min header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -318,7 +318,7 @@ describe('Valid x-v-min header', function () {
             errors: [ {
                 code: 'urn:au-cds:error:cds-all:Header/UnsupportedVersion',
                 title: 'Unsupported Version',
-                detail: '5'
+                detail: 'minimum version: 1, maximum version: 4'
             }]
         };
         mockRequest = {
@@ -333,7 +333,7 @@ describe('Valid x-v-min header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(406);
@@ -381,7 +381,7 @@ describe('Validate x-fapi-header header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));
@@ -401,7 +401,7 @@ describe('Validate x-fapi-header header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith("x-fapi-interaction-id", mockUUID);
         expect(nextFunction).toBeCalledTimes(1);
@@ -427,7 +427,7 @@ describe('Validate x-fapi-header header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
@@ -445,7 +445,7 @@ describe('Validate x-fapi-header header', function () {
         let hdrConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let hdr = cdrHeaders(hdrConfig);
+        let hdr = cdrHeaderValidator(hdrConfig);
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockResponse.setHeader).toBeCalledWith('x-v', 4);
         expect(mockResponse.setHeader).toBeCalledWith('x-fapi-interaction-id', expect.any(String));

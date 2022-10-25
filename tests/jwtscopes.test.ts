@@ -1,6 +1,5 @@
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { NextFunction, Response } from 'express';
-import { cdrAuthorisation } from '../src/cdr-authorisation';
 import { cdrJwtScopes } from '../src/cdr-jwtscopes';
 import { DsbAuthConfig } from '../src/models/dsb-auth-config';
 import { DsbRequest } from '../src/models/dsb-request';

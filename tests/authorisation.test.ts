@@ -1,6 +1,6 @@
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { NextFunction } from 'express';
-import { cdrAuthorisation } from '../src/cdr-authorisation';
+import { cdrTokenValidator } from '../src/cdr-token-validator';
 import { CdrConfig } from '../src/models/cdr-config';
 import { DsbRequest } from '../src/models/dsb-request';
 import { DsbResponse } from '../src/models/dsb-response';
@@ -47,7 +47,7 @@ describe('Authorization middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrAuthorisation(authConfig);
+        let auth = cdrTokenValidator(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
@@ -68,7 +68,7 @@ describe('Authorization middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrAuthorisation(authConfig);
+        let auth = cdrTokenValidator(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -90,7 +90,7 @@ describe('Authorization middleware', () => {
         let authConfig: CdrConfig = {
             endpoints: endpoints
         }
-        let auth = cdrAuthorisation(authConfig);
+        let auth = cdrTokenValidator(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockResponse.status).toBeCalledWith(401);
     });
@@ -125,7 +125,7 @@ describe('Authorization middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrAuthorisation(authConfig);
+        let auth = cdrTokenValidator(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -166,7 +166,7 @@ describe('Authorization middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrAuthorisation(authConfig);
+        let auth = cdrTokenValidator(authConfig);
         auth(mockRequest as DsbRequest, mockResponse as DsbResponse, nextFunction as NextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(403);

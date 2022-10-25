@@ -9,7 +9,7 @@ import { CdrConfig } from './models/cdr-config';
 
 
 
-export function cdrAuthorisation(authOptions: CdrConfig): any {
+export function cdrTokenValidator(authOptions: CdrConfig): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
 
