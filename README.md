@@ -27,11 +27,11 @@ Because these error handling requirements across a large number of endpoints, co
 
 This packages is a boilerplate implementation of these common requirements and it can be used in any NodeJS / ExpressJS application as middleware.
 
-The key functions exported by this package are `cdrHeaders, cdrAuthorisation, and cdrJwtScopes`.
+The key functions exported by this package are `cdrHeaderValidator, cdrTokenValidator, and cdrJwtScopes`.
 
 ![Design](/images/MiddleWareDesign.jpg "Middleware pipeline")
 
-### cdrHeaders
+### cdrHeaderValidator
 
 This middleware function will handle some basic header checks and construct a CDR compliant *ErrorList* object where this required and return an appropriate Http status code.
 
@@ -45,7 +45,7 @@ This middleware function will handle some basic header checks and construct a CD
 | Request has x-fapi-interaction-id header    | The x-fapi-interaction-id from the request is returned with the response header   |
 | Invalid x-fapi-interaction-id header is provided with the request  | - Http status code 400 </br> - An *ErrorList* is returned with Header/Invalid. |
 
-### cdrAuthorisation
+### cdrTokenValidator
 
 This middleware function will handle some basic authorisation checks and construct a CDR compliant *ErrorList* object where this required and return an appropriate Http status code.
 
@@ -72,7 +72,7 @@ The middleware will expect a configuration object.
 
 ### Configuration Object
 
-The middleware functions `cdrHeaders, cdrAuthorisation` and `cdrJwtScopes`  will expect a configuration object (CdrConfig). This object should define each endpoint implemented by the application.
+The middleware functions `cdrHeaderValidator, cdrTokenValidator` and `cdrJwtScopes`  will expect a configuration object (CdrConfig). This object should define each endpoint implemented by the application.
 Each endpoint must be defined by the request type (GET/POST/DELETE) and the path as defined in the published [standard](https://consumerdatastandardsaustralia.github.io/standards/#introduction)
 
 ```javascript
@@ -97,7 +97,7 @@ const dsbOptions: CdrConfig = {
     endpoints: implementedEndpoints
 }
 
-app.use(cdrHeaders(dsbOptions))
+app.use(cdrHeaderValidator(dsbOptions))
 
 ```
 
