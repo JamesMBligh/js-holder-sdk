@@ -1,4 +1,4 @@
-# CDR Helper
+# JS Holder SDK
 
 ## Disclaimer
 
