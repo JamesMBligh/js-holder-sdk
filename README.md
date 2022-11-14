@@ -1,4 +1,4 @@
-# CDR Helper
+# JS Holder SDK
 
 ## Disclaimer
 
@@ -70,6 +70,20 @@ The middleware will expect a configuration object.
 | The access token from the IdAM is a JWT and scopes are an array of strings    | The request object will be extended      |
 | The access token from the IdAM is a JWT and scopes are a space separated string   |The request object will be extended  |
 
+### How to use
+Install the library with npm or yarn
+`npm i @cds-au/holder-sdk`
+
+Import the library
+```javascript
+import { cdrHeaderValidator }  from '@cds-au/holder-sdk';
+```
+then inject in http pipeline where this is appropriate
+```javascript
+app.use(cdrHeaderValidator(dsbOptions));
+```
+
+
 ### Configuration Object
 
 The middleware functions `cdrHeaderValidator, cdrTokenValidator` and `cdrJwtScopes`  will expect a configuration object (CdrConfig). This object should define each endpoint implemented by the application.
@@ -103,4 +117,6 @@ app.use(cdrHeaderValidator(dsbOptions))
 
 ### Demo Project
 
-The [cdr-helper-demo](https://github.com/ConsumerDataStandardsAustralia/cdr-helper-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
+*Note: The demo project with this library was tested with NodeJS v18.7.0*
+
+The [holder-sdk-demo](https://github.com/ConsumerDataStandardsAustralia/holder-sdk-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application

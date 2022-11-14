@@ -1,5 +1,5 @@
 {
-  "name": "@cds-au/cdr-helper",
+  "name": "@cds-au/holder-sdk",
   "version": "1.0.0",
   "description": "NodeJS middleware to handle error generation in line with Australian Consumer Data Standards technical specifications",
   "main": "dist/index.js",
@@ -30,7 +30,7 @@
     "typescript": "^4.4.4"
   },
   "dependencies": {
-    "@types/consumer-data-standards": "^3.0.0",
+    "@types/consumer-data-standards": "^4.0.0",
     "express": "^4.17.1",
     "jwt-decode": "^3.1.2",
     "uuid": "^8.3.2",
