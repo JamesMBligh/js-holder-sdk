@@ -1,4 +1,4 @@
-# Data Holder SDK
+# JS Holder SDK
 
 ## Disclaimer
 
