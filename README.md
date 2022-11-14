@@ -1,4 +1,4 @@
-# CDR Helper
+# Data Holder SDK
 
 ## Disclaimer
 
@@ -116,5 +116,7 @@ app.use(cdrHeaderValidator(dsbOptions))
 ```
 
 ### Demo Project
+
+*Note: The demo project with this library was tested with NodeJS v18.7.0*
 
 The [holder-sdk-demo](https://github.com/ConsumerDataStandardsAustralia/holder-sdk-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
