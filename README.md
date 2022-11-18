@@ -119,4 +119,4 @@ app.use(cdrHeaderValidator(dsbOptions))
 
 *Note: The demo project with this library was tested with NodeJS v18.7.0*
 
-The [holder-sdk-demo](https://github.com/ConsumerDataStandardsAustralia/holder-sdk-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
+The [js-holder-sdk-demo](https://github.com/ConsumerDataStandardsAustralia/js-holder-sdk-demo) project provides a basic implementation illustrating how the middleware can be used in a NodeJS/ ExpressJS  application
