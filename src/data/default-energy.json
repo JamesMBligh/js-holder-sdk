@@ -25,7 +25,7 @@
     },
     {
         "requestType": "GET",
-        "requestPath": " /energy/electricity/servicepoints/{servicePointId}",
+        "requestPath": "/energy/electricity/servicepoints/{servicePointId}",
         "minSupportedVersion": 1,
         "maxSupportedVersion": 1
     },
