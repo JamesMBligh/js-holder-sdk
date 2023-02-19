@@ -1,0 +1,26 @@
+[
+    {
+        "requestType": "GET",
+        "requestPath": "/common/customer",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 1
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/common/customer/detail",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 2
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/discover/status",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 1
+    },
+    {
+        "requestType": "GET",
+        "requestPath": "/discover/outages",
+        "minSupportedVersion": 1,
+        "maxSupportedVersion": 1
+    }
+]
