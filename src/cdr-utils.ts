@@ -3,10 +3,11 @@ import { Request } from 'express';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
 import { EndpointConfig } from './models/endpoint-config';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
-const endpoints = [...energyEndpoints, ...bankingEndpoints];
+const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
 export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
 
@@ -31,6 +32,11 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
     requestUrlArray = requestUrlArray.slice(2);
     requestUrlArray = removeEmptyEntries(requestUrlArray);
     // the search array which will change as the search progresses
+    // remove query parameters from end
+    let tmp1: string = requestUrlArray[requestUrlArray.length-1];
+    let newValArray: string[] = tmp1.split('?');
+    requestUrlArray[requestUrlArray.length-1] = newValArray[0];
+
     let searchArray: string[] = requestUrlArray.slice();
 
     let returnEP = null;

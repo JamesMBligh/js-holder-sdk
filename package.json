@@ -1,6 +1,6 @@
 {
   "name": "@cds-au/holder-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "NodeJS middleware to handle error generation in line with Australian Consumer Data Standards technical specifications",
   "main": "dist/index.js",
   "scripts": {
