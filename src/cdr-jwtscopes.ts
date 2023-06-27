@@ -6,7 +6,7 @@ import { DsbResponse } from './models/dsb-response';
 
 
 
-export function cdrJwtScopes(authOptions: DsbAuthConfig) {  
+export function cdrJwtScopes(authOptions: DsbAuthConfig): any {  
     // Extend the request object and add scopes based on JWT access token
     // This implementation expects the scopes in the JWT to be a space seperated string
     return function scopes(req: DsbRequest, res: DsbResponse, next: NextFunction) {

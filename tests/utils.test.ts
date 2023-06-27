@@ -124,4 +124,18 @@ describe('Utility functions', () => {
         expect(ep).toBeUndefined();
 
     });
+
+    test('Find endpoints - with query string', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/banking/accounts/1234567?page=2&page-size=5`,
+        }
+        let ep = getEndpoint(mockRequest as Request, options, errorList);
+        expect(ep).not.toBeNull()
+        expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}');
+
+    });
+
 });
