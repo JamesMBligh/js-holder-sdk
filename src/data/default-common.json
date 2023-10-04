@@ -8,7 +8,7 @@
     {
         "requestType": "GET",
         "requestPath": "/common/customer/detail",
-        "minSupportedVersion": 1,
+        "minSupportedVersion": 2,
         "maxSupportedVersion": 2
     },
     {
