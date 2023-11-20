@@ -115,7 +115,11 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
     }    
 }
 
+// This will examine the request url, find any account identifiers and validate against the authorised user object
 export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
+
+    if (user == null || user.accounts == null) 
+        return false;
     let url = req.url.substring(req.url.indexOf('//')+2);  
     let baseIdx = url.indexOf('cds-au/v1') 
     if (baseIdx == -1)
@@ -138,28 +142,24 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
 
         // if the subStr does not have any slashes it must be interpreted as accountid
         if (subStr.indexOf('/') == -1) {
-            if (user.accounts == null) return false;
             return (user.accounts?.indexOf(subStr) > -1);
         }
 
         let dd = subStr.indexOf('/direct-debits');
         // check for direct debit accounts
         if (dd > -1) {
-            if (user.accounts == null) return false;
             let accountId = subStr.substring(0, dd);
             return (user.accounts?.indexOf(accountId) > -1);
         }
         let bal = subStr.indexOf('/balance');
         // check for balance account
         if (bal > -1) {
-            if (user.accounts == null) return false;
             let accountId = subStr.substring(0, bal);
             return (user.accounts?.indexOf(accountId) > -1);
         }
         let trans = subStr.indexOf('/transactions');
         // check for balance account
         if (trans > -1) {
-            if (user.accounts == null) return false;
             let accountId = subStr.substring(0, trans);
             return (user.accounts?.indexOf(accountId) > -1);
         }
@@ -167,7 +167,6 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
         let payments = subStr.indexOf('/payments');
         // check for balance account
         if (payments > -1) {
-            if (user.accounts == null) return false;
             let accountId = subStr.substring(0, payments);
             return (user.accounts?.indexOf(accountId) > -1);
         }
