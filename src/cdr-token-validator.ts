@@ -11,7 +11,7 @@ import { CdrConfig } from './models/cdr-config';
 
 export function cdrTokenValidator(authOptions: CdrConfig): any {
 
-    return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
+    return function token(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
 
         let errorList : ResponseErrorListV2 = {
             errors:  []

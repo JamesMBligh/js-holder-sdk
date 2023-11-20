@@ -6,6 +6,7 @@ import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
 import { EndpointConfig } from './models/endpoint-config';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
+import { CdrUser } from './models/user';
 
 const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
@@ -41,7 +42,9 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
 
     let returnEP = null;
     let found: boolean = false;
+    let idx = 0;
     do {
+        idx++;
         let searchPath = buildPath(searchArray);
         returnEP = endpoints.find(x => x.requestPath == searchPath && x.requestType == req.method); 
 
@@ -69,7 +72,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
                 found = searchArray.length == 0;               
             }
         }
-    } while(!found && (searchArray.length > 0));
+    } while((!found) && idx < (endpoints.length));
 
     // set the error message if no endpoint was found or not implemented
     if (returnEP == null) {
@@ -95,6 +98,83 @@ export function findXFapiRequired(req: Request): boolean {
         return true;
     }
 }
+
+export function scopeForRequestIsValid(req: Request, scopes: string[] | undefined): boolean {
+    try {
+        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
+        let ep = endpoints[idx];
+        // endpoint exists and no scopes are required
+        if (ep?.authScopesRequired == null)
+            return true;
+        else {
+            if (scopes == null) return false;
+            return (scopes?.indexOf(ep.authScopesRequired) > -1);
+        }
+    } catch(e) {
+        return false;
+    }    
+}
+
+export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
+    let url = req.url.substring(req.url.indexOf('//')+2);  
+    let baseIdx = url.indexOf('cds-au/v1') 
+    if (baseIdx == -1)
+        return false;
+
+    // get rid of the query parameters
+    let idx = url.indexOf('?');
+    if (idx > -1)
+        url = url.substring(0, url.indexOf('?'));
+    // read the url after the cds-au/au part
+    url = url.substring(baseIdx + 'cds-au/v1'.length, url.length);
+    if (url.indexOf('/banking/accounts') > -1) {
+        let startPos = url.indexOf('/banking/accounts/');
+        let l1 = '/banking/accounts/'.length;
+        let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '');
+
+        if (subStr.length == 0) {
+            return true;
+        }
+
+        // if the subStr does not have any slashes it must be interpreted as accountid
+        if (subStr.indexOf('/') == -1) {
+            if (user.accounts == null) return false;
+            return (user.accounts?.indexOf(subStr) > -1);
+        }
+
+        let dd = subStr.indexOf('/direct-debits');
+        // check for direct debit accounts
+        if (dd > -1) {
+            if (user.accounts == null) return false;
+            let accountId = subStr.substring(0, dd);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let bal = subStr.indexOf('/balance');
+        // check for balance account
+        if (bal > -1) {
+            if (user.accounts == null) return false;
+            let accountId = subStr.substring(0, bal);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let trans = subStr.indexOf('/transactions');
+        // check for balance account
+        if (trans > -1) {
+            if (user.accounts == null) return false;
+            let accountId = subStr.substring(0, trans);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+
+        let payments = subStr.indexOf('/payments');
+        // check for balance account
+        if (payments > -1) {
+            if (user.accounts == null) return false;
+            let accountId = subStr.substring(0, payments);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+    }
+    return false;
+}
+
 
 function arraysAreEqual(a: string[], b: string[]): boolean {
     const equals = (a.length === b.length &&
