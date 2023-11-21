@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import energyEndpoints from '../src/data/cdr-energy-endpoints.json';
 import bankingEndpoints from '../src/data/cdr-banking-endpoints.json'
 import { EndpointConfig } from '../src/models/endpoint-config';
-import { authorisedForAccount, getEndpoint } from '../src/cdr-utils';
+import { authorisedForAccount, getEndpoint, scopeForRequestIsValid } from '../src/cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from '../src/models/user';
 
@@ -158,6 +158,7 @@ describe('Utility functions', () => {
 
     });
 
+    // tests for authorisedForAccount - banking
     test('Find account id in url and test - valid case', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
@@ -237,7 +238,6 @@ describe('Utility functions', () => {
 
     });    
 
-
     test('Test for account id: Invalid url return false', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
@@ -302,7 +302,7 @@ describe('Utility functions', () => {
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
             method: 'GET',
-            url: `${standardsVersion}/banking/accounts/786545/balance`,
+            url: `${standardsVersion}/banking/accounts/786545/direct-debits`,
         }
         let usr: CdrUser = {
             customerId: '12345',
@@ -316,5 +316,207 @@ describe('Utility functions', () => {
         expect(isValid).toEqual(true);
 
     });
+
+    // tests for authorisedForAccount - energy
+    test('Find account id in url and test - valid case', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/1234567?page=2&page-size=5`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });
+
+    test('Find account id in payments url and test - valid case', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/1234567/payment-schedule`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });
+
+    test('Test for account id: No account ID with trailing  returns true', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+    });
+
+    test('Test for account id: No account ID / no trailing slash returns true ', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });    
+
+    test('Test for account id: Invalid url return false', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/account-list/`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(false);
+    });
+
+    test('Find account id in concession url and test - valid case', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/1234567/concessions?page=2&page-size=5`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });
+
+    test('Find account id in billing url and test - valid case', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/786545/billing`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });
+
+    test('Find account id in direct balance url and test - valid case', async () => {
+        
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/786545/balance`,
+        }
+        let usr: CdrUser = {
+            customerId: '12345',
+            loginId: 'Doe.John',
+            encodeUserId: 'asdasd',
+            encodedAccounts: ['GHRET456'],
+            accounts: ['1234567', '786545'],
+            scopes_supported: ['banking']
+        }
+        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        expect(isValid).toEqual(true);
+
+    });
+
+    test('scopeForRequestIsValid: no scope required', async () => {
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/plans`
+        }
+        let isValid = scopeForRequestIsValid(mockRequest as Request, undefined);
+        expect(isValid).toEqual(true);  
+        isValid = scopeForRequestIsValid(mockRequest as Request, ['energy:billing:read']);
+        expect(isValid).toEqual(true);      
+    });
+
+    test('scopeForRequestIsValid: no scope required, url trailing slash', async () => {
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/plans/`
+        }
+        let isValid = scopeForRequestIsValid(mockRequest as Request, undefined);
+        expect(isValid).toEqual(true);    
+    });  
+    
+    test('scopeForRequestIsValid: no scope required valid scope', async () => {
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/`
+        }
+        let isValid = scopeForRequestIsValid(mockRequest as Request, ['energy:accounts.basic:read']);
+        expect(isValid).toEqual(true);    
+    });  
+    
+    test('scopeForRequestIsValid: no scope required invalid scope', async () => {
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/`
+        }
+        let isValid = scopeForRequestIsValid(mockRequest as Request, ['energy:accounts.detail:read']);
+        expect(isValid).toEqual(false);    
+    });   
+    
 
 });

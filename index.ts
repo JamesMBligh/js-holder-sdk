@@ -1,7 +1,7 @@
 
 
 import { cdrHeaderValidator } from './src/cdr-header-validator'
-import { cdrTokenValidator } from './src/cdr-token-validator'
+import { cdrScopeValidator } from './src/cdr-scope-validator'
 import { cdrJwtScopes} from './src/cdr-jwtscopes';
 import defaultEnergyEndpoints  from './src/data/default-energy.json';
 import defaultBankingEndpoints from './src/data/default-banking.json';
@@ -10,7 +10,6 @@ import { EndpointConfig } from './src/models/endpoint-config';
 import { getEndpoint } from './src/cdr-utils';
 import { IAuthServiceData } from './src/models/auth-data.interface';
 import { AccountModel, CustomerModel } from './src/models/login';
-import { cdrAuthentication } from './src/cdr-authentication';
 import { DsbAuthServerConfig } from './src/models/dsb-auth-server-config';
 import { DsbAuthService } from './src/service/dsb-auth-services';
 import { IAuthService } from './src/models/auth-service.interface';
@@ -27,7 +26,7 @@ export { DsbResponse } from './src/models/dsb-response';
 
 
 export {
-     cdrHeaderValidator, cdrTokenValidator, cdrJwtScopes, cdrAuthentication, IAuthService,
+     cdrHeaderValidator, cdrScopeValidator, cdrJwtScopes, IAuthService,
      DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints, getEndpoint, IAuthServiceData,
      AccountModel, CustomerModel, DsbAuthServerConfig, DsbAuthService
 }

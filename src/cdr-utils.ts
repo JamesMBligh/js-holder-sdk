@@ -171,6 +171,52 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
             return (user.accounts?.indexOf(accountId) > -1);
         }
     }
+
+    if (url.indexOf('/energy/accounts') > -1) {
+        let startPos = url.indexOf('/energy/accounts/');
+        let l1 = '/energy/accounts/'.length;
+        let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '');
+
+        if (subStr.length == 0) {
+            return true;
+        }
+
+        // if the subStr does not have any slashes it must be interpreted as accountid
+        if (subStr.indexOf('/') == -1) {
+            return (user.accounts?.indexOf(subStr) > -1);
+        }
+
+        let inv = subStr.indexOf('/invoices');
+        // check for direct debit accounts
+        if (inv > -1) {
+            let accountId = subStr.substring(0, inv);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let bal = subStr.indexOf('/balance');
+        // check for balance account
+        if (bal > -1) {
+            let accountId = subStr.substring(0, bal);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let conc = subStr.indexOf('/concessions');
+        // check for balance account
+        if (conc > -1) {
+            let accountId = subStr.substring(0, conc);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let billing = subStr.indexOf('/billing');
+        // check for balance account
+        if (billing > -1) {
+            let accountId = subStr.substring(0, billing);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+        let payments = subStr.indexOf('/payment-schedule');
+        // check for balance account
+        if (payments > -1) {
+            let accountId = subStr.substring(0, payments);
+            return (user.accounts?.indexOf(accountId) > -1);
+        }
+    }
     return false;
 }
 
