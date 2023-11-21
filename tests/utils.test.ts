@@ -167,11 +167,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/1234567?page=2&page-size=5`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -187,11 +184,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/1234567/payments/scheduled?page=2&page-size=5`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -207,11 +201,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -226,11 +217,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -246,11 +234,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/account-list/`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -265,11 +250,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/1234567/transactions?page=2&page-size=5`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -285,11 +267,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/786545/balance`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -305,11 +284,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/banking/accounts/786545/direct-debits`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -326,11 +302,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/1234567?page=2&page-size=5`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -346,11 +319,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/1234567/payment-schedule`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -366,11 +336,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -385,11 +352,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -405,11 +369,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/account-list/`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -424,11 +385,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/1234567/concessions?page=2&page-size=5`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -444,11 +402,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/786545/billing`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
@@ -464,11 +419,8 @@ describe('Utility functions', () => {
             url: `${standardsVersion}/energy/accounts/786545/balance`,
         }
         let usr: CdrUser = {
-            customerId: '12345',
             loginId: 'Doe.John',
-            encodeUserId: 'asdasd',
-            encodedAccounts: ['GHRET456'],
-            accounts: ['1234567', '786545'],
+            accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);

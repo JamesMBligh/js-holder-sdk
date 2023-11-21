@@ -101,14 +101,15 @@ export function findXFapiRequired(req: Request): boolean {
 
 export function scopeForRequestIsValid(req: Request, scopes: string[] | undefined): boolean {
     try {
-        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-        let ep = endpoints[idx];
+        let ep = findEndpointConfig(req);
         // endpoint exists and no scopes are required
         if (ep?.authScopesRequired == null)
             return true;
         else {
+            // there is scopes required and none have been provided
             if (scopes == null) return false;
-            return (scopes?.indexOf(ep.authScopesRequired) > -1);
+            let idx = scopes?.indexOf(ep.authScopesRequired) 
+            return (idx > -1);
         }
     } catch(e) {
         return false;
@@ -118,7 +119,7 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 // This will examine the request url, find any account identifiers and validate against the authorised user object
 export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
 
-    if (user == null || user.accounts == null) 
+    if (user == null || user.accountsEnergy == null) 
         return false;
     let url = req.url.substring(req.url.indexOf('//')+2);  
     let baseIdx = url.indexOf('cds-au/v1') 
@@ -142,33 +143,33 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
 
         // if the subStr does not have any slashes it must be interpreted as accountid
         if (subStr.indexOf('/') == -1) {
-            return (user.accounts?.indexOf(subStr) > -1);
+            return (user.accountsEnergy?.indexOf(subStr) > -1);
         }
 
         let dd = subStr.indexOf('/direct-debits');
         // check for direct debit accounts
         if (dd > -1) {
             let accountId = subStr.substring(0, dd);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let bal = subStr.indexOf('/balance');
         // check for balance account
         if (bal > -1) {
             let accountId = subStr.substring(0, bal);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let trans = subStr.indexOf('/transactions');
         // check for balance account
         if (trans > -1) {
             let accountId = subStr.substring(0, trans);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
 
         let payments = subStr.indexOf('/payments');
         // check for balance account
         if (payments > -1) {
             let accountId = subStr.substring(0, payments);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
     }
 
@@ -183,43 +184,107 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
 
         // if the subStr does not have any slashes it must be interpreted as accountid
         if (subStr.indexOf('/') == -1) {
-            return (user.accounts?.indexOf(subStr) > -1);
+            return (user.accountsEnergy?.indexOf(subStr) > -1);
         }
 
         let inv = subStr.indexOf('/invoices');
         // check for direct debit accounts
         if (inv > -1) {
             let accountId = subStr.substring(0, inv);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let bal = subStr.indexOf('/balance');
         // check for balance account
         if (bal > -1) {
             let accountId = subStr.substring(0, bal);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let conc = subStr.indexOf('/concessions');
         // check for balance account
         if (conc > -1) {
             let accountId = subStr.substring(0, conc);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let billing = subStr.indexOf('/billing');
         // check for balance account
         if (billing > -1) {
             let accountId = subStr.substring(0, billing);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
         let payments = subStr.indexOf('/payment-schedule');
         // check for balance account
         if (payments > -1) {
             let accountId = subStr.substring(0, payments);
-            return (user.accounts?.indexOf(accountId) > -1);
+            return (user.accountsEnergy?.indexOf(accountId) > -1);
         }
     }
     return false;
 }
 
+function findEndpointConfig(req: Request): DsbEndpoint | undefined{
+    // remove the host and assign to urlId  
+    let tmp = req.url.substring(req.url.indexOf('//')+2);  
+    let originalPath = tmp.substring(tmp.indexOf('/'));
+
+
+    // create an array with all the path elements
+    let requestUrlArray = req.url.split('/').splice(1);
+    // ensure that the cds-au/v1 exists
+    if (requestUrlArray.length < 3) {
+        // this cannot be a CDR endpoint
+       // errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+        return undefined;
+    }
+    if (requestUrlArray[0] != 'cds-au' || requestUrlArray[1] != 'v1') {
+         // this cannot be a CDR endpoint
+         //errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+         return undefined;       
+    }
+    requestUrlArray = requestUrlArray.slice(2);
+    requestUrlArray = removeEmptyEntries(requestUrlArray);
+    // the search array which will change as the search progresses
+    // remove query parameters from end
+    let tmp1: string = requestUrlArray[requestUrlArray.length-1];
+    let newValArray: string[] = tmp1.split('?');
+    requestUrlArray[requestUrlArray.length-1] = newValArray[0];
+
+    let searchArray: string[] = requestUrlArray.slice();
+
+    let returnEP = null;
+    let found: boolean = false;
+    let idx = 0;
+    do {
+        idx++;
+        let searchPath = buildPath(searchArray);
+        returnEP = endpoints.find(x => x.requestPath == searchPath && x.requestType == req.method); 
+
+        if (returnEP == null) {   
+            searchArray.splice(searchArray.length-1, 1) ;  
+        }
+        else {
+            if (searchArray.length == requestUrlArray.length) {
+                found = true;
+                searchArray = [];
+            }
+            else {
+                let tmpArray  = checkForEndpoint(returnEP as DsbEndpoint);
+                if (requestUrlArray.length > searchArray.length) {
+                    if (tmpArray.length > searchArray.length) {
+                        searchArray.push(tmpArray[searchArray.length]);
+                    }
+                    else {
+                        searchArray.push(requestUrlArray[searchArray.length]);
+                    }
+                    
+                } else {
+                    searchArray = tmpArray;
+                }  
+                found = searchArray.length == 0;               
+            }
+        }
+    } while((!found) && idx < (endpoints.length));
+    return returnEP;
+}
 
 function arraysAreEqual(a: string[], b: string[]): boolean {
     const equals = (a.length === b.length &&

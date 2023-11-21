@@ -7,14 +7,13 @@ import { ErrorEntity } from './models/error-entity';
 import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
-import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
 
 
 
 export function cdrHeaderValidator(options: CdrConfig): any {
     
-    return function headers(req: Request, res: DsbResponse, next: NextFunction) {
+    return function headers(req: Request, res: Response, next: NextFunction) {
 
         let errorList : ResponseErrorListV2 = {
             errors:  []

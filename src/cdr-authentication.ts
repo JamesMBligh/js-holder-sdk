@@ -2,15 +2,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { authorisedForAccount, getEndpoint, scopeForRequestIsValid } from './cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { DsbRequest } from './models/dsb-request';
-import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
-import { IAuthService } from './models/auth-service.interface';
+import { CdrUser } from './models/user';
+import { IUserService } from './models/user-service.interface';
 
 
-
-
-export function cdrAuthenticationValidator(config: CdrConfig, authService: IAuthService): any {
+export function cdrAuthenticationValidator(config: CdrConfig, userService: IUserService): any {
 
     return async function auth(req: Request, res: Response, next: NextFunction) {
 
@@ -22,41 +19,31 @@ export function cdrAuthenticationValidator(config: CdrConfig, authService: IAuth
                 res.status(401).json('Not authorized');
                 return;        
             }
-            let tokenIsValid = await authService?.verifyAccessToken(token)
-            if (tokenIsValid == false) {
-                console.log("Tken was checked and found to be invalid");
-                res.status(401).json('Not authorized');
-                return;
-            }
 
             let errorList : ResponseErrorListV2 = {
                 errors:  []
             }
 
+            // get the user
+            let user = userService.getUser();
             // check if a user object exdists
-            if (authService.authUser == null) {
+            if (user == null) {
                 console.log("No authenticatid user object has been set.");
                 res.status(401).json('Not authorized');
                 return;            
             }
             // check if the right scope exist 
-            if (scopeForRequestIsValid(req, authService.authUser?.scopes_supported) == false) {
+            if (scopeForRequestIsValid(req, user?.scopes_supported) == false) {
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
                 res.status(403).json(errorList);
                 return;         
             } 
 
             // check the requested accountId or other url parameters specific to a logged in user
-            if (authorisedForAccount(req, authService.authUser) == false) {
-                // errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
-                // res.status(403).json(errorList);
+            if (authorisedForAccount(req, user) == false) {
                 res.status(404).json('Not Found');
                 return;                    
             }   
-            next();
-       
+            next();    
     } 
 }
-
-
-
