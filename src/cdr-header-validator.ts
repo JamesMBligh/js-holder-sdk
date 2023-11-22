@@ -14,7 +14,7 @@ import { CdrConfig } from './models/cdr-config';
 export function cdrHeaderValidator(options: CdrConfig): any {
     
     return function headers(req: Request, res: Response, next: NextFunction) {
-
+        console.log("cdrHeaderValidator.....");
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }

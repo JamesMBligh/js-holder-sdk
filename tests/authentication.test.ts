@@ -17,9 +17,8 @@ describe('Authentication validation middleware', () => {
     let mockUserService: IUserService = {
         getUser(): CdrUser | undefined {
             let usr : CdrUser = {
-                loginId: '',
                 accountsEnergy:['12345'],
-                scopes_supported: ['energy:billing:read']
+                scopes_supported: ['energy:billing:read', 'energy:accounts.basic:read']
             }
             return usr;
         }
@@ -116,7 +115,34 @@ describe('Authentication validation middleware', () => {
             endpoints: endpoints
         }
 
-        let user = mockUserService.getUser();
+        //let user = mockUserService.getUser();
+        let auth = cdrAuthenticationValidator(authConfig, mockUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });
+
+
+    test('Access account - valid case 2', async () => {
+
+        let endpoints: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/accounts/",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/accounts/`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            }
+        };
+        let authConfig: CdrConfig = {
+
+            endpoints: endpoints
+        }
+
+        //let user = mockUserService.getUser();
         let auth = cdrAuthenticationValidator(authConfig, mockUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);

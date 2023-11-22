@@ -6,7 +6,7 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { EndpointConfig } from '../src/models/endpoint-config';
 import { CdrConfig } from '../src/models/cdr-config';
 
-describe('Invalid x-v header', function () {
+describe('Hader test validation', function () {
 
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;

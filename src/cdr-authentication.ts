@@ -10,7 +10,7 @@ import { IUserService } from './models/user-service.interface';
 export function cdrAuthenticationValidator(config: CdrConfig, userService: IUserService): any {
 
     return async function auth(req: Request, res: Response, next: NextFunction) {
-
+            console.log("cdrAuthenticationValidator.....");
             let token = req.headers?.authorization as string;
             console.log(`Token received is ${token}`);
 

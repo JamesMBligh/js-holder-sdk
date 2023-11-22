@@ -8,7 +8,7 @@ import { IUserService } from './models/user-service.interface';
 export function cdrScopeValidator(authOptions: CdrConfig, userService: IUserService): any {
 
     return function token(req: Request, res: Response, next: NextFunction): any {
-
+        console.log("cdrScopeValidator.....");
         let errorList: ResponseErrorListV2 = {
             errors: []
         }

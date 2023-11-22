@@ -5,8 +5,10 @@ import { EndpointConfig } from '../src/models/endpoint-config';
 import { IUserService } from '../src/models/user-service.interface';
 import { CdrUser } from '../src/models/user';
 import { Request, Response, NextFunction } from 'express';
+import { cdrEndpointValidator } from '../src/cdr-endpoint-validator';
+import { ResponseErrorListV2 } from 'consumer-data-standards/energy';
 
-describe('Scope validation middleware', () => {
+describe('Endpoint validation middleware', () => {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
@@ -41,7 +43,7 @@ describe('Scope validation middleware', () => {
         };
     });
 
-    test('Without headers', async () => {
+    test('Test valid endpoint', async () => {
 
         let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
@@ -57,52 +59,68 @@ describe('Scope validation middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
-        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
-    });
-
-    test('No authorization required', async () => {
-        mockRequest = {
-            method: 'GET',
-            url: `${standardsVersion}/energy/plans`
-        };
-
-        let endpoints: EndpointConfig[] = [{
-            "requestType": "GET",
-            "requestPath": "/energy/plans",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        let authConfig: CdrConfig = {
-
-            endpoints: endpoints
-        }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
+        let auth = cdrEndpointValidator(authConfig);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
 
-    test('Without "authorization" header', async () => {
+    test('Test invalid endpoint', async () => {
 
         let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
-            "requestPath": "/energy/accounts",
+            "requestPath": "/energy/electricity/servicepoints",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }]
         mockRequest = {
             method: 'GET',
-            url: `${standardsVersion}/energy/accounts`,
-            headers: {
-            }
-        }
+            url: `${standardsVersion}/energy/electricity/all-accounts`
+        };
         let authConfig: CdrConfig = {
+
             endpoints: endpoints
         }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Resource/NotFound',
+                title: 'NotFound',
+                detail: 'This endpoint is not a CDR endpoint'
+            }]
+        };
+        let auth = cdrEndpointValidator(authConfig);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(404);
     });
+
+    // test('Test valid endpoint - but not implemented', async () => {
+
+    //     let endpoints: EndpointConfig[] = [{
+    //         "requestType": "GET",
+    //         "requestPath": "/energy/electricity/servicepoints",
+    //         "minSupportedVersion": 1,
+    //         "maxSupportedVersion": 4
+    //     }]
+    //     mockRequest = {
+    //         method: 'GET',
+    //         url: `${standardsVersion}/energy/electricity/accounts`
+    //     };
+    //     let authConfig: CdrConfig = {
+
+    //         endpoints: endpoints
+    //     }
+    //     let returnedErrors: ResponseErrorListV2 = {
+    //         errors: [ {
+    //             code: 'urn:au-cds:error:cds-all:Resource/NotImplemented',
+    //             title: 'NotImplemented',
+    //             detail: 'This endpoint has not been implemented'
+    //         }]
+    //     };
+    //     let auth = cdrEndpointValidator(authConfig);
+    //     auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+    //     expect(mockStatus.json).toBeCalledWith(returnedErrors);
+    //     expect(mockResponse.status).toBeCalledWith(404);
+    // });
+
 
 });
