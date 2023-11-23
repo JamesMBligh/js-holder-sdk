@@ -91,15 +91,22 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
     try {
         let ep = findEndpointConfig(req);
         // endpoint exists and no scopes are required
-        if (ep?.authScopesRequired == null)
+        if (ep?.authScopesRequired == null){
+            console.log('The endpoint exists and no scopes are required');
             return true;
+        }       
         else {
             // there is scopes required and none have been provided
-            if (scopes == null) return false;
-            let idx = scopes?.indexOf(ep.authScopesRequired) 
+            if (scopes == null){
+                console.log('Scopes are required and none have been provided');
+                return false;
+            }
+            let idx = scopes?.indexOf(ep.authScopesRequired);
+            console.log(`Scopes required: ${ep.authScopesRequired}`);
             return (idx > -1);
         }
-    } catch(e) {
+    } catch(e: any) {
+        console.log(`Exception in scopeForRequestIsValid: ${e?.message}`);
         return false;
     }    
 }
@@ -107,16 +114,28 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 // This will examine the request url, find any account identifiers and validate against the authorised user object
 export function authorisedForAccount(req: Request, user:  CdrUser | undefined): boolean | undefined {
 
-    if (endpointRequiresAuthentication(req) == false)
+    if (endpointRequiresAuthentication(req) == false) {
+        console.log(`No authentication required for: ${req.url}`);
         return true;
-    if (urlHasResourceIdentifier(req) == false && req.method == 'GET')
+    }
+        
+    if (urlHasResourceIdentifier(req) == false && req.method == 'GET'){
+        console.log(`No resource identifier in GET url: ${req.url}`);
         return true;
+    }
+        
 
-    if (user == null) 
+    if (user == null) {
+        console.log(`No user object found.`);
         return false;
+    }        
 
     let url = createSearchUrl(req)?.toLowerCase();
-    if (url == undefined) return false;
+    if (url == undefined){
+        console.log(`The url is not a CDR enpoint url ${req.url}`);
+        return false;
+    }
+    
 
     if (url.indexOf('/banking/products') > -1 ) return true;
     if (url.indexOf('/energy/plans') > -1 ) return true;
