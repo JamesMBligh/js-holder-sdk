@@ -214,7 +214,6 @@ describe('Invalid x-v-min header', function () {
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        //expect(nextFunction).toBeCalledTimes(1);
     });
 
     test('Invalid numeric x-min-v value returns error', function () {
@@ -241,7 +240,6 @@ describe('Invalid x-v-min header', function () {
         hdr(mockRequest as Request, mockResponse as Response, nextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(400);
-        //expect(nextFunction).toBeCalledTimes(1);
     });
 
 });

@@ -41,26 +41,6 @@ describe('Scope validation middleware', () => {
         };
     });
 
-    test('Without headers', async () => {
-
-        let endpoints: EndpointConfig[] = [{
-            "requestType": "GET",
-            "requestPath": "/energy/electricity/servicepoints",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        mockRequest = {
-            method: 'GET',
-            url: `${standardsVersion}/energy/electricity/servicepoints`
-        };
-        let authConfig: CdrConfig = {
-
-            endpoints: endpoints
-        }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
-        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
-    });
 
     test('No authorization required', async () => {
         mockRequest = {
@@ -81,28 +61,6 @@ describe('Scope validation middleware', () => {
         let auth = cdrScopeValidator(authConfig, mockUserService);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
-    });
-
-    test('Without "authorization" header', async () => {
-
-        let endpoints: EndpointConfig[] = [{
-            "requestType": "GET",
-            "requestPath": "/energy/accounts",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        mockRequest = {
-            method: 'GET',
-            url: `${standardsVersion}/energy/accounts`,
-            headers: {
-            }
-        }
-        let authConfig: CdrConfig = {
-            endpoints: endpoints
-        }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
-        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
     });
 
 });

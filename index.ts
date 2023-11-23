@@ -12,7 +12,7 @@ import { getEndpoint } from './src/cdr-utils';
 //import { AccountModel, CustomerModel } from './src/models/login';
 // import { DsbAuthServerConfig } from './src/models/dsb-auth-server-config';
 import { IUserService } from './src/models/user-service.interface';
-import { cdrAuthenticationValidator } from './src/cdr-authentication';
+import { cdrResourceValidator } from './src/cdr-resource-validator';
 import { cdrEndpointValidator } from './src/cdr-endpoint-validator';
 
 const DefaultEnergyEndpoints = [...defaultEnergyEndpoints] as EndpointConfig[];
@@ -24,7 +24,7 @@ export { CdrConfig } from './src/models/cdr-config';
 export { EndpointConfig } from './src/models/endpoint-config';
 
 export {
-     cdrHeaderValidator, cdrScopeValidator, cdrAuthenticationValidator, cdrEndpointValidator, IUserService,
+     cdrHeaderValidator, cdrScopeValidator, cdrResourceValidator, cdrEndpointValidator, IUserService,
      DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints, getEndpoint
 }
 

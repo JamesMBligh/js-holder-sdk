@@ -46,7 +46,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
     do {
         idx++;
         let searchPath = buildPath(searchArray);
-        returnEP = endpoints.find(x => x.requestPath == searchPath && x.requestType == req.method); 
+        returnEP = endpoints.find(x => x.requestPath.toLowerCase() == searchPath?.toLowerCase() && x.requestType == req.method); 
 
         if (returnEP == null) {   
             searchArray.splice(searchArray.length-1, 1) ;  
@@ -105,12 +105,17 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 }
 
 // This will examine the request url, find any account identifiers and validate against the authorised user object
-export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
+export function authorisedForAccount(req: Request, user:  CdrUser | undefined): boolean | undefined {
+
+    if (endpointRequiresAuthentication(req) == false)
+        return true;
+    if (urlHasResourceIdentifier(req) == false && req.method == 'GET')
+        return true;
 
     if (user == null) 
         return false;
 
-    let url = createSearchUrl(req);
+    let url = createSearchUrl(req)?.toLowerCase();
     if (url == undefined) return false;
 
     if (url.indexOf('/banking/products') > -1 ) return true;
@@ -134,13 +139,28 @@ export function authorisedForAccount(req: Request, user:  CdrUser): boolean {
     if (url.indexOf('/energy/electricity/servicepoints') > -1) {
         return checkEnergyElectricityRoute(url, user);
     }
+}
+
+export function endpointRequiresAuthentication(req: Request): boolean | undefined {
+    let ep = findEndpointConfig(req);
+    if (ep != null) {
+        return (ep.authScopesRequired != null)
+    }
+    return true;
+}
+
+export function urlHasResourceIdentifier(req: Request): boolean | undefined {
+    let ep = findEndpointConfig(req);
+    if (ep != null) {
+        return (ep.requestPath.indexOf('{') > -1)
+    }
     return false;
 }
 
 function checkBankAccountRoute(url: string, user:  CdrUser): boolean {
     let startPos = url.indexOf('/banking/accounts/');
     let l1 = '/banking/accounts/'.length;
-    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '');
+    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '').toLowerCase();
 
     if (subStr.length == 0) {
         return true;
@@ -184,7 +204,7 @@ function checkBankAccountRoute(url: string, user:  CdrUser): boolean {
 function checkEnergyAccountRoute(url: string, user:  CdrUser): boolean {
     let startPos = url.indexOf('/energy/accounts/');
     let l1 = '/energy/accounts/'.length;
-    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '');
+    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '').toLowerCase();
 
     if (subStr.length == 0) {
         return true;
@@ -234,7 +254,7 @@ function checkEnergyAccountRoute(url: string, user:  CdrUser): boolean {
 function checkEnergyElectricityRoute(url: string, user:  CdrUser): boolean {
     let startPos = url.indexOf('/energy/electricity/servicepoints');
     let l1 = '/energy/electricity/servicepoints'.length;
-    let subStr = url.substring(startPos + l1 + 1, url.length).replace(/\/+$/, '');
+    let subStr = url.substring(startPos + l1 + 1, url.length).replace(/\/+$/, '').toLowerCase();
     if (subStr.length == 0) {
         return true;
     }
@@ -262,7 +282,7 @@ function checkEnergyElectricityRoute(url: string, user:  CdrUser): boolean {
 function checkBankingPaymentRoute(req: Request, url: string, user:  CdrUser): boolean {
     let startPos = url.indexOf('/banking/payments/scheduled');
     let l1 = '/banking/payments/scheduled'.length;
-    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '');
+    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '').toLowerCase();
 
     if (subStr.length == 0) {
         if (req.method == 'POST') {
@@ -315,12 +335,8 @@ function checkBankingPayeeRoute(url: string, user:  CdrUser): boolean {
     return false;
 }
 
-function urlIsFinal(): boolean {
-    return true;
-}
-
 function createSearchUrl(req: Request): string | undefined {
-    let url = req.url.substring(req.url.indexOf('//')+2);  
+    let url = req.url.substring(req.url.indexOf('//')+2).toLowerCase();  
     let baseIdx = url.indexOf('cds-au/v1') 
     if (baseIdx == -1)
         return undefined;

@@ -2,12 +2,12 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { cdrScopeValidator } from '../src/cdr-scope-validator';
 import { CdrConfig } from '../src/models/cdr-config';
 import { EndpointConfig } from '../src/models/endpoint-config';
-import { cdrAuthenticationValidator } from '../src/cdr-authentication';
+import { cdrResourceValidator } from '../src/cdr-resource-validator';
 import { CdrUser } from '../src/models/user';
 import { IUserService } from '../src/models/user-service.interface';
 import { Request, Response, NextFunction } from 'express';
 
-describe('Authentication validation middleware', () => {
+describe('Resource validation middleware', () => {
     let mockRequest: Partial<Request>;
     let mockResponse: Partial<Response>;
     let nextFunction: NextFunction = jest.fn();
@@ -44,17 +44,17 @@ describe('Authentication validation middleware', () => {
     });
 
 
-    test('Without user object', async () => {
+    test('Without user object - resource in url', async () => {
 
         let endpoints: EndpointConfig[] = [{
             "requestType": "GET",
-            "requestPath": "/energy/electricity/servicepoints",
+            "requestPath": "/energy/electricity/servicepoints/{servicePointId}",
             "minSupportedVersion": 1,
             "maxSupportedVersion": 4
         }]
         mockRequest = {
             method: 'GET',
-            url: `${standardsVersion}/energy/electricity/servicepoints`
+            url: `${standardsVersion}/energy/electricity/servicepoints/123453`
         };
         let authConfig: CdrConfig = {
 
@@ -66,34 +66,10 @@ describe('Authentication validation middleware', () => {
             }
         }
 
-        let auth = cdrAuthenticationValidator(authConfig, userSvc);
+        let auth = cdrResourceValidator(authConfig, userSvc);
         auth(mockRequest, mockResponse,  nextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
+        expect(mockResponse.status).toBeCalledWith(404);
     });
-
-    test('Without headers', async () => {
-
-        let endpoints: EndpointConfig[] = [{
-            "requestType": "GET",
-            "requestPath": "/energy/electricity/servicepoints",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        mockRequest = {
-            method: 'GET',
-            url: `${standardsVersion}/energy/electricity/servicepoints`
-        };
-        let authConfig: CdrConfig = {
-
-            endpoints: endpoints
-        }
-
-
-        let auth = cdrAuthenticationValidator(authConfig, mockUserService);
-        auth(mockRequest, mockResponse,  nextFunction);
-        expect(mockResponse.status).toBeCalledWith(401);
-    });
-
 
     test('Access account - valid case', async () => {
 
@@ -116,7 +92,7 @@ describe('Authentication validation middleware', () => {
         }
 
         //let user = mockUserService.getUser();
-        let auth = cdrAuthenticationValidator(authConfig, mockUserService);
+        let auth = cdrResourceValidator(authConfig, mockUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -143,7 +119,7 @@ describe('Authentication validation middleware', () => {
         }
 
         //let user = mockUserService.getUser();
-        let auth = cdrAuthenticationValidator(authConfig, mockUserService);
+        let auth = cdrResourceValidator(authConfig, mockUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -169,7 +145,7 @@ describe('Authentication validation middleware', () => {
         }
 
         let user = mockUserService.getUser();
-        let auth = cdrAuthenticationValidator(authConfig, mockUserService);
+        let auth = cdrResourceValidator(authConfig, mockUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
     });

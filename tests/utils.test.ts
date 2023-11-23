@@ -107,18 +107,18 @@ describe('Utility functions tests', () => {
 
     });
 
-    // test('Find endpoints - parameters embedded v2', async () => {
+    test('Find endpoints - parameters embedded v2', async () => {
         
-    //     const endpoints = [...energyEndpoints, ...bankingEndpoints];  
-    //     mockRequest = {
-    //         method: 'GET',
-    //         url: `${standardsVersion}/banking/accounts/123456/payments/scheduled`,
-    //     }
-    //     let ep = getEndpoint(mockRequest as Request, options, errorList);
-    //     expect(ep).not.toBeNull();
-    //     expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}/payments/scheduled');
+        const endpoints = [...energyEndpoints, ...bankingEndpoints];  
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/banking/accounts/123456/payments/scheduled`,
+        }
+        let ep = getEndpoint(mockRequest as Request, options, errorList);
+        expect(ep).not.toBeNull();
+        expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}/payments/scheduled');
 
-    // });
+    });
 
     test('Find endpoints - trailing slash', async () => {
         
@@ -239,7 +239,7 @@ describe('Utility functions tests', () => {
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
-        expect(isValid).toEqual(false);
+        expect(isValid).toEqual(true);
     });
 
     test('Find account id in transaction url and test - valid case', async () => {
@@ -361,7 +361,7 @@ describe('Utility functions tests', () => {
 
     });    
 
-    test('Test for account id: Invalid url return false', async () => {
+    test('Test for account id: Not a CDR enndpoint return true', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
@@ -374,7 +374,7 @@ describe('Utility functions tests', () => {
             scopes_supported: ['banking']
         }
         let isValid = authorisedForAccount(mockRequest as Request, usr);
-        expect(isValid).toEqual(false);
+        expect(isValid).toEqual(true);
     });
 
     test('Find account id in concession url and test - valid case', async () => {
