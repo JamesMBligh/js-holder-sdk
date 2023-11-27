@@ -16,7 +16,7 @@ export function cdrTokenValidator(authOptions: CdrConfig): any {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let ep = getEndpoint(req, authOptions.endpoints, errorList);
+        let ep = getEndpoint(req, authOptions, errorList);
         if (ep != null) {
             // if there no authorisation required
             if (ep.authScopesRequired == null) {

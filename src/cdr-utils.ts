@@ -1,23 +1,21 @@
-
 import { Request } from 'express';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
-import { EndpointConfig } from './models/endpoint-config';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
+import { CdrConfig } from './models/cdr-config';
 
 const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
-export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
-
-    // remove the host and assign to urlId  
-    let tmp = req.url.substring(req.url.indexOf('//')+2);  
-    let originalPath = tmp.substring(tmp.indexOf('/'));
-
+export function getEndpoint(req: Request, options: CdrConfig, errorList : ResponseErrorListV2 ): DsbEndpoint | null {
 
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
+
+    // remove the base path if one has been specified in config
+    requestUrlArray = removeBasePath(options.basePath, requestUrlArray);
+
     // ensure that the cds-au/v1 exists
     if (requestUrlArray.length < 3) {
         // this cannot be a CDR endpoint
@@ -76,7 +74,7 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
         errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
     } else {
         let ep: DsbEndpoint = returnEP as DsbEndpoint;
-        let idx1 = options.findIndex(x => x.requestPath == ep.requestPath);
+        let idx1 = options.endpoints.findIndex(x => x.requestPath == ep.requestPath);
         if (idx1 < 0) {
             // this is a CDR endpoint but it has not been implemenetd by this server
             errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
@@ -151,4 +149,23 @@ function buildPath(pathArray: string[], count : number = -1): string | null {
     return '/' + tmpArray.join('/');
 }
 
+function removeBasePath(basePath: string | undefined, pathArray: string[]): string[] {
+    // If no base path then do nothiong
+    if (!basePath) return pathArray;
 
+    const baseArray = basePath.split('/').splice(1);
+
+    // If the base path is longer then the path then do nothing as there cannot be a match 
+    if (baseArray.length > pathArray.length) return pathArray;
+
+    // See if the base path matches the start of the path by comparing each component
+    const varRegex = /^[{].*[}]$/;
+    for (let i = 0; i < baseArray.length; i++) {
+        if (baseArray[i].match(varRegex) || baseArray[i] === pathArray[i]) continue;
+
+        // A mismatch is found so return
+        return pathArray;
+    }
+
+    return pathArray.slice(baseArray.length);
+}
