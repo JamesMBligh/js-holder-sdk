@@ -12,11 +12,6 @@ const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
 export function getEndpoint(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
 
-    // remove the host and assign to urlId  
-    let tmp = req.url.substring(req.url.indexOf('//')+2);  
-    let originalPath = tmp.substring(tmp.indexOf('/'));
-
-
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
     // ensure that the cds-au/v1 exists
@@ -48,8 +43,8 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList :
         let searchPath = buildPath(searchArray);
         returnEP = endpoints.find(x => x.requestPath.toLowerCase() == searchPath?.toLowerCase() && x.requestType == req.method); 
 
-        if (returnEP == null) {   
-            searchArray.splice(searchArray.length-1, 1) ;  
+        if (returnEP == null) { 
+                searchArray.splice(searchArray.length-1, 1); 
         }
         else {
             if (searchArray.length == requestUrlArray.length) {
@@ -109,6 +104,90 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
         console.log(`Exception in scopeForRequestIsValid: ${e?.message}`);
         return false;
     }    
+}
+
+export function getEndpointEx(req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 ): DsbEndpoint | null {
+
+    // create an array with all the path elements
+    let requestUrlArray = req.url.split('/').splice(1);
+    // ensure that the cds-au/v1 exists
+    if (requestUrlArray.length < 3) {
+        // this cannot be a CDR endpoint
+        errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+        return null;
+    }
+    if (requestUrlArray[0] != 'cds-au' || requestUrlArray[1] != 'v1') {
+         // this cannot be a CDR endpoint
+         errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'});
+         return null;       
+    }
+    requestUrlArray = requestUrlArray.slice(2);
+    requestUrlArray = removeEmptyEntries(requestUrlArray);
+    // the search array which will change as the search progresses
+    // remove query parameters from end
+    let tmp1: string = requestUrlArray[requestUrlArray.length-1];
+    let newValArray: string[] = tmp1.split('?');
+
+    // this is the array with each part of the uri as one element
+    requestUrlArray[requestUrlArray.length-1] = newValArray[0];
+    let searchArray: string[] = requestUrlArray.slice();
+
+    // this array should have at least 2 entries. There is no CDR endpoint with less than that
+    if (requestUrlArray.length < 2) return null;
+
+    // let searchPath = requestUrlArray[0];
+    // let epConfig = null;
+    // // start at the second element
+    // for(let i = 1; i < requestUrlArray.length-2; i++) {
+    //     // build the search path
+    //     searchPath += requestUrlArray[i].toLowerCase();
+    //     epConfig = endpoints.find(x => x.requestPath.toLowerCase() == searchPath && x.requestType == req.method);
+
+    //     if (epConfig == null && i < requestUrlArray.length-2) {
+    //         if (searchPath == '')
+    //     }
+
+    // }
+
+    let returnEP = null;
+    let found: boolean = false;
+    let idx = 0;
+    do {
+        idx++;
+        let searchPath = buildPath(searchArray);
+        returnEP = endpoints.find(x => x.requestPath.toLowerCase() == searchPath?.toLowerCase() && x.requestType == req.method); 
+
+        if (returnEP == null) { 
+            // if (searchArray.length < requestUrlArray.length){
+            //     searchArray.push(requestUrlArray[searchArray.length]);
+            // }
+            // else  
+                searchArray.splice(searchArray.length-1, 1); 
+        }
+        else {
+            if (searchArray.length == requestUrlArray.length) {
+                found = true;
+                searchArray = [];
+            }
+            else {
+                let tmpArray  = checkForEndpoint(returnEP as DsbEndpoint);
+                if (requestUrlArray.length > searchArray.length) {
+                    if (tmpArray.length > searchArray.length) {
+                        searchArray.push(tmpArray[searchArray.length]);
+                    }
+                    else {
+                        searchArray.push(requestUrlArray[searchArray.length]);
+                    }
+                    
+                } else {
+                    searchArray = tmpArray;
+                }  
+                found = searchArray.length == 0;               
+            }
+        }
+    } while((!found) && idx < (endpoints.length));
+
+    return returnEP as DsbEndpoint;
 }
 
 // This will examine the request url, find any account identifiers and validate against the authorised user object
