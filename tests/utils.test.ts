@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import energyEndpoints from '../src/data/cdr-energy-endpoints.json';
 import bankingEndpoints from '../src/data/cdr-banking-endpoints.json'
 import { EndpointConfig } from '../src/models/endpoint-config';
-import { authorisedForAccount, getEndpoint, scopeForRequestIsValid } from '../src/cdr-utils';
+import { authorisedForAccount, getEndpoint,scopeForRequestIsValid } from '../src/cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from '../src/models/user';
 
@@ -141,7 +141,7 @@ describe('Utility functions tests', () => {
             url: `${standardsVersion}/energy/all-customer`,
         }
         let ep = getEndpoint(mockRequest as Request, options, errorList);
-        expect(ep).toBeUndefined();
+        expect(ep).toBe(null);
 
     });
 

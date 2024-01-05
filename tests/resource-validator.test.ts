@@ -14,7 +14,7 @@ describe('Resource validation middleware', () => {
     let mockStatus: Partial<Response>;
     let standardsVersion = '/cds-au/v1';
 
-    let mockUserService: IUserService = {
+    let mockEnergyUserService: IUserService = {
         getUser(): CdrUser | undefined {
             let usr : CdrUser = {
                 accountsEnergy:['12345'],
@@ -90,13 +90,10 @@ describe('Resource validation middleware', () => {
 
             endpoints: endpoints
         }
-
-        //let user = mockUserService.getUser();
-        let auth = cdrResourceValidator(authConfig, mockUserService);
+        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
-
 
     test('Access account - valid case 2', async () => {
 
@@ -119,7 +116,7 @@ describe('Resource validation middleware', () => {
         }
 
         //let user = mockUserService.getUser();
-        let auth = cdrResourceValidator(authConfig, mockUserService);
+        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -144,11 +141,9 @@ describe('Resource validation middleware', () => {
             endpoints: endpoints
         }
 
-        let user = mockUserService.getUser();
-        let auth = cdrResourceValidator(authConfig, mockUserService);
+        let user = mockEnergyUserService.getUser();
+        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
-    });
-
-   
+    });  
 });
