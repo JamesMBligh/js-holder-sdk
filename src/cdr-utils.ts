@@ -102,6 +102,7 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 // This will examine the request url, find any account identifiers and validate against the authorised user object
 export function authorisedForAccount(req: Request, user: CdrUser | undefined): boolean | undefined {
 
+    console.log(`Checking auth status for user ${JSON.stringify(user)}`);
     if (endpointRequiresAuthentication(req) == false) {
         console.log(`No authentication required for: ${req.url}`);
         return true;
@@ -111,7 +112,6 @@ export function authorisedForAccount(req: Request, user: CdrUser | undefined): b
         console.log(`No resource identifier in GET url: ${req.url}`);
         return true;
     }
-
 
     if (user == null) {
         console.log(`No user object found.`);
@@ -125,26 +125,48 @@ export function authorisedForAccount(req: Request, user: CdrUser | undefined): b
     }
 
 
-    if (url.indexOf('/banking/products') > -1) return true;
-    if (url.indexOf('/energy/plans') > -1) return true;
+    if (url.indexOf('/banking/products') > -1) {
+        console.log(`No authorisation required for: ${req.url}`);
+        return true;
+    }
+    
+    if (url.indexOf('/energy/plans') > -1){
+        console.log(`No authorisation required for: ${req.url}`);
+        return true;
+    }
 
     if (url.indexOf('/banking/accounts') > -1) {
-        return checkBankAccountRoute(url, user);
+        console.log(`Checking authorisation for: ${req.url}`);
+        let ret = checkBankAccountRoute(url, user);
+        console.log(`Authorisation status: ${ret}`);
+        return ret;
     }
 
     if (url.indexOf('/banking/payments/scheduled') > -1) {
-        return checkBankingPaymentRoute(req, url, user);
+        console.log(`Checking authorisation for: ${req.url}`);
+        let ret = checkBankingPaymentRoute(req, url, user);
+        console.log(`Authorisation status: ${ret}`);
+        return ret;
     }
     if (url.indexOf('/banking/payees') > -1) {
-        return checkBankingPayeeRoute(url, user);
+        console.log(`Checking authorisation for: ${req.url}`);
+        let ret = checkBankingPayeeRoute(url, user);
+        console.log(`Authorisation status: ${ret}`);
+        return ret;
     }
 
     if (url.indexOf('/energy/accounts') > -1) {
-        return checkEnergyAccountRoute(url, user);
+        console.log(`Checking authorisation for: ${req.url}`);
+        let ret = checkEnergyAccountRoute(url, user);
+        console.log(`Authorisation status: ${ret}`);
+        return ret;
     }
 
     if (url.indexOf('/energy/electricity/servicepoints') > -1) {
-        return checkEnergyElectricityRoute(url, user);
+        console.log(`Checking authorisation for: ${req.url}`);
+        let ret = checkEnergyElectricityRoute(url, user);
+        console.log(`Authorisation status: ${ret}`);
+        return ret;
     }
 }
 

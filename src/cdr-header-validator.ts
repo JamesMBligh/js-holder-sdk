@@ -15,6 +15,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
     
     return function headers(req: Request, res: Response, next: NextFunction) {
         console.log("cdrHeaderValidator.....");
+        console.log(`Endpoints: ${options.endpoints}`);
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
@@ -25,7 +26,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
         let ep = getEndpoint(req, options.endpoints, errorList);
 
         if (ep != null) {
-
+            console.log(`Found endpoint: ${JSON.stringify(ep)}`);
             let requestVersionObject = {
                 requestedVersion : 1,
                 minrequestedVersion : 1        
@@ -58,6 +59,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
             }
 
             if (errorList != null && errorList.errors.length > 0) {
+                console.log(`Errors found: ${errorList}`);
                 res.status(400).json(errorList);
                 return;
             } else {
@@ -76,10 +78,11 @@ export function cdrHeaderValidator(options: CdrConfig): any {
             } 
         } else {
             // this endpoint was not found
+            console.log(`No valid CDR endpoint found for ${req.url}`);
             res.status(404).json(errorList);
             return;
         }
-
+        console.log(`No errors found. Calling next()...`);
         next(); 
     } 
 }
