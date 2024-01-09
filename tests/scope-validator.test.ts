@@ -58,7 +58,7 @@ describe('Scope validation middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrScopeValidator(authConfig, mockUserService);
+        let auth = cdrScopeValidator(mockUserService);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });

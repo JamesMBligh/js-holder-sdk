@@ -1,11 +1,10 @@
 
 import { Request, Response, NextFunction } from 'express';
-import { getEndpoint, scopeForRequestIsValid } from './cdr-utils';
+import { scopeForRequestIsValid } from './cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
-import { CdrConfig } from './models/cdr-config';
 import { IUserService } from './models/user-service.interface';
 
-export function cdrScopeValidator(authOptions: CdrConfig, userService: IUserService): any {
+export function cdrScopeValidator(userService: IUserService): any {
 
     return function token(req: Request, res: Response, next: NextFunction): any {
         console.log("cdrScopeValidator.....");

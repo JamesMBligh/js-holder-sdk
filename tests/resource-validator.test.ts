@@ -43,7 +43,6 @@ describe('Resource validation middleware', () => {
         };
     });
 
-
     test('Without user object - resource in url', async () => {
 
         let endpoints: EndpointConfig[] = [{
@@ -66,7 +65,7 @@ describe('Resource validation middleware', () => {
             }
         }
 
-        let auth = cdrResourceValidator(authConfig, userSvc);
+        let auth = cdrResourceValidator(userSvc);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
     });
@@ -90,7 +89,7 @@ describe('Resource validation middleware', () => {
 
             endpoints: endpoints
         }
-        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
+        let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -116,7 +115,7 @@ describe('Resource validation middleware', () => {
         }
 
         //let user = mockUserService.getUser();
-        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
+        let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
@@ -142,7 +141,7 @@ describe('Resource validation middleware', () => {
         }
 
         let user = mockEnergyUserService.getUser();
-        let auth = cdrResourceValidator(authConfig, mockEnergyUserService);
+        let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
     });  
