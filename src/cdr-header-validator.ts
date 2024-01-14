@@ -23,7 +23,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
         let maxSupportedVersion = findMaxSupported(req, options.endpoints);
         let xfapiIsRequired: boolean = findXFapiRequired(req);
 
-        let ep = getEndpoint(req, options.endpoints, errorList);
+        let ep = getEndpoint(req, errorList);
 
         if (ep != null) {
             console.log(`Found endpoint: ${JSON.stringify(ep)}`);
@@ -76,12 +76,13 @@ export function cdrHeaderValidator(options: CdrConfig): any {
                     return;
                 }    
             } 
-        } else {
-            // this endpoint was not found
-            console.log(`No valid CDR endpoint found for ${req.url}`);
-            res.status(404).json(errorList);
-            return;
         }
+        // else {
+        //     // this endpoint was not found
+        //     console.log(`No valid CDR endpoint found for ${req.url}`);
+        //     res.status(404).json(errorList);
+        //     return;
+        // }
         console.log(`No errors found. Calling next()...`);
         next(); 
     } 
@@ -220,7 +221,7 @@ function findMinSupported(req: Request, options: EndpointConfig[]): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, errorList) as DsbEndpoint;
         var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         var ep = options[idx];
         return ep.minSupportedVersion;
@@ -235,7 +236,7 @@ function findMaxSupported(req: Request, options: EndpointConfig[]): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, errorList) as DsbEndpoint;
         var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         let ep = options[idx];
         return ep.maxSupportedVersion;

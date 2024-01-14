@@ -4,7 +4,6 @@ import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
-import { EndpointConfig } from './models/endpoint-config';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from './models/user';
 
@@ -12,7 +11,7 @@ const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
 // Find the matching CDR endpoint from the request url
 // If the url is not a CDR endpoint return an appropriate error object
-export function getEndpoint(req: Request, options: EndpointConfig[], errorList: ResponseErrorListV2): DsbEndpoint | null {
+export function getEndpoint(req: Request, errorList: ResponseErrorListV2): DsbEndpoint | null {
 
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
@@ -61,7 +60,9 @@ export function getEndpoint(req: Request, options: EndpointConfig[], errorList: 
             isMatch ? returnEP = u : null;
         }
     })
-
+    if (returnEP == null) {
+        errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
+    }
     return returnEP;
 }
 

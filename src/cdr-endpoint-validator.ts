@@ -2,7 +2,6 @@ import { ResponseErrorListV2 } from "consumer-data-standards/common";
 import { getEndpoint } from "./cdr-utils";
 import { Request, Response, NextFunction } from 'express';
 import { CdrConfig } from "./models/cdr-config";
-import { DsbEndpoint } from "./models/dsb-endpoint-entity";
 
 export function cdrEndpointValidator(config: CdrConfig) {
 
@@ -11,19 +10,25 @@ export function cdrEndpointValidator(config: CdrConfig) {
         let errorList: ResponseErrorListV2 = {
             errors: []
         }
-        let returnEP = getEndpoint(req, config.endpoints, errorList);
+        let returnEP = getEndpoint(req, errorList);
         if (returnEP == null) {
-            errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
+            console.log(`No endpoint found for url ${req.url}`);
+            //errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'})
         } else {
-            let idx1 = config.endpoints.findIndex(x => x.requestPath == returnEP?.requestPath);
+            let idx1 = config.endpoints.findIndex(x => x.requestPath.toLowerCase() == returnEP?.requestPath.toLowerCase());
             if (idx1 < 0) {
+                
                 // this is a CDR endpoint but it has not been implemenetd by this server
-                errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
+                console.log(`Valid endpoint but has not been implemented: ${req.url}`);
+               errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'})
             }       
         }
-        if (errorList.errors.length == 0)
+        if (errorList.errors.length == 0){
+            console.log(`No errors. Calling next(): ${req.url}`);
             next();
+        }
         else {
+            console.log(`Errors found: ${req.url}`);
             res.status(404).json(errorList);
             return;
         }
