@@ -8,22 +8,31 @@ import { EndpointConfig } from './models/endpoint-config';
 import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import { CdrConfig } from './models/cdr-config';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
 
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
 
-
-export function cdrHeaderValidator(options: CdrConfig): any {
+export function cdrHeaderValidator(config: CdrConfig | undefined): any {
     
     return function headers(req: Request, res: Response, next: NextFunction) {
         console.log("cdrHeaderValidator.....");
-        console.log(`Endpoints: ${options.endpoints}`);
+        let endpoints : EndpointConfig[] = [];
+        if (config?.endpoints == null) {
+            endpoints = defaultEndpoints as EndpointConfig[];
+        } else {
+            endpoints = config?.endpoints as EndpointConfig[];
+        }
+
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let minSupportedVersion = findMinSupported(req, options.endpoints);
-        let maxSupportedVersion = findMaxSupported(req, options.endpoints);
+        let minSupportedVersion = findMinSupported(req, endpoints);
+        let maxSupportedVersion = findMaxSupported(req, endpoints);
         let xfapiIsRequired: boolean = findXFapiRequired(req);
 
-        let ep = getEndpoint(req, errorList);
+        let ep = getEndpoint(req, endpoints);
 
         if (ep != null) {
             console.log(`Found endpoint: ${JSON.stringify(ep)}`);
@@ -77,12 +86,6 @@ export function cdrHeaderValidator(options: CdrConfig): any {
                 }    
             } 
         }
-        // else {
-        //     // this endpoint was not found
-        //     console.log(`No valid CDR endpoint found for ${req.url}`);
-        //     res.status(404).json(errorList);
-        //     return;
-        // }
         console.log(`No errors found. Calling next()...`);
         next(); 
     } 
@@ -221,7 +224,7 @@ function findMinSupported(req: Request, options: EndpointConfig[]): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, undefined) as DsbEndpoint;
         var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         var ep = options[idx];
         return ep.minSupportedVersion;
@@ -236,7 +239,7 @@ function findMaxSupported(req: Request, options: EndpointConfig[]): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, undefined) as DsbEndpoint;
         var idx = options.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         let ep = options[idx];
         return ep.maxSupportedVersion;

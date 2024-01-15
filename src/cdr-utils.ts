@@ -4,26 +4,30 @@ import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
-import { ResponseErrorListV2 } from 'consumer-data-standards/common';
+//import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from './models/user';
+import { EndpointConfig } from './models/endpoint-config';
 
-const endpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
 // Find the matching CDR endpoint from the request url
 // If the url is not a CDR endpoint return an appropriate error object
-export function getEndpoint(req: Request, errorList: ResponseErrorListV2): DsbEndpoint | null {
+export function getEndpoint(req: Request, endpoints: EndpointConfig[] | undefined): DsbEndpoint | null {
+    if (endpoints == null) {
+        endpoints = defaultEndpoints as DsbEndpoint[];
+    }
 
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
     // ensure that the cds-au/v1 exists
     if (requestUrlArray.length < 3) {
         // this cannot be a CDR endpoint
-        errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
+        //errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
         return null;
     }
     if (requestUrlArray[0] != 'cds-au' || requestUrlArray[1] != 'v1') {
         // this cannot be a CDR endpoint
-        errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
+        //errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
         return null;
     }
     requestUrlArray = requestUrlArray.slice(2);
@@ -60,16 +64,16 @@ export function getEndpoint(req: Request, errorList: ResponseErrorListV2): DsbEn
             isMatch ? returnEP = u : null;
         }
     })
-    if (returnEP == null) {
-        errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
-    }
+    // if (returnEP == null) {
+    //     errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint' });
+    // }
     return returnEP;
 }
 
 export function findXFapiRequired(req: Request): boolean {
     try {
-        let idx = endpoints.findIndex(x => req.url.includes(x.requestPath));
-        let ep = endpoints[idx];
+        let idx = defaultEndpoints.findIndex(x => req.url.includes(x.requestPath));
+        let ep = defaultEndpoints[idx];
         return ep.requiresXFAPI ??= true;
     } catch (e) {
         return true;
@@ -414,7 +418,7 @@ function findEndpointConfig(req: Request): DsbEndpoint | undefined {
     do {
         idx++;
         let searchPath = buildPath(searchArray);
-        returnEP = endpoints.find(x => x.requestPath == searchPath && x.requestType == req.method);
+        returnEP = defaultEndpoints.find(x => x.requestPath == searchPath && x.requestType == req.method);
 
         if (returnEP == null) {
             searchArray.splice(searchArray.length - 1, 1);
@@ -440,8 +444,8 @@ function findEndpointConfig(req: Request): DsbEndpoint | undefined {
                 found = searchArray.length == 0;
             }
         }
-    } while ((!found) && idx < (endpoints.length));
-    return returnEP;
+    } while ((!found) && idx < (defaultEndpoints.length));
+    return returnEP as DsbEndpoint;
 }
 
 function arraysAreEqual(a: string[], b: string[]): boolean {
@@ -464,7 +468,7 @@ function checkForEndpoint(ep: DsbEndpoint): string[] {
     let returnPathArray: string[] = [];
     let searchPath = ep.requestPath + '/{';
     // get all endpoints which have searchPath in them
-    let returnEpArray = endpoints.filter(x => x.requestPath.includes(searchPath)) as DsbEndpoint[];
+    let returnEpArray = defaultEndpoints.filter(x => x.requestPath.includes(searchPath)) as DsbEndpoint[];
     if (returnEpArray != null && returnEpArray.length > 0) {
         // create an array with all the path elements
         // sort the elements with accorfing the requestPath length

@@ -1,5 +1,4 @@
 
-import { cdrScopeValidator } from '../src/cdr-scope-validator';
 import { CdrConfig } from '../src/models/cdr-config';
 import { EndpointConfig } from '../src/models/endpoint-config';
 import { IUserService } from '../src/models/user-service.interface';
@@ -76,7 +75,7 @@ describe('Endpoint validation middleware', () => {
             method: 'GET',
             url: `${standardsVersion}/energy/electricity/all-accounts`
         };
-        let authConfig: CdrConfig = {
+        let config: CdrConfig = {
 
             endpoints: endpoints
         }
@@ -87,40 +86,39 @@ describe('Endpoint validation middleware', () => {
                 detail: 'This endpoint is not a CDR endpoint'
             }]
         };
-        let auth = cdrEndpointValidator(authConfig);
+        let auth = cdrEndpointValidator(config);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(mockStatus.json).toBeCalledWith(returnedErrors);
         expect(mockResponse.status).toBeCalledWith(404);
     });
 
-    // test('Test valid endpoint - but not implemented', async () => {
+    test('Test valid endpoint - but not implemented', async () => {
 
-    //     let endpoints: EndpointConfig[] = [{
-    //         "requestType": "GET",
-    //         "requestPath": "/energy/electricity/servicepoints",
-    //         "minSupportedVersion": 1,
-    //         "maxSupportedVersion": 4
-    //     }]
-    //     mockRequest = {
-    //         method: 'GET',
-    //         url: `${standardsVersion}/energy/electricity/accounts`
-    //     };
-    //     let authConfig: CdrConfig = {
+        let endpoints: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/electricity/servicepoints",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/electricity/servicepoints/3456777`
+        };
+        let config: CdrConfig = {
 
-    //         endpoints: endpoints
-    //     }
-    //     let returnedErrors: ResponseErrorListV2 = {
-    //         errors: [ {
-    //             code: 'urn:au-cds:error:cds-all:Resource/NotImplemented',
-    //             title: 'NotImplemented',
-    //             detail: 'This endpoint has not been implemented'
-    //         }]
-    //     };
-    //     let auth = cdrEndpointValidator(authConfig);
-    //     auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
-    //     expect(mockStatus.json).toBeCalledWith(returnedErrors);
-    //     expect(mockResponse.status).toBeCalledWith(404);
-    // });
-
+            endpoints: endpoints
+        }
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Resource/NotImplemented',
+                title: 'NotImplemented',
+                detail: 'This endpoint has not been implemented'
+            }]
+        };
+        let auth = cdrEndpointValidator(config);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });
 
 });

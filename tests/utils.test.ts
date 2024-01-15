@@ -5,6 +5,8 @@ import { EndpointConfig } from '../src/models/endpoint-config';
 import { authorisedForAccount, getEndpoint,scopeForRequestIsValid } from '../src/cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from '../src/models/user';
+import { DsbEndpoint } from '../src/models/dsb-endpoint-entity';
+import commonEndpoints from '../src/data/cdr-common-endpoints.json';
 
 describe('Utility functions tests', () => {
     let mockRequest: Partial<Request>;
@@ -67,6 +69,18 @@ describe('Utility functions tests', () => {
      });
 
 
+     test('Get endpoint from defaults', async () => {
+
+        const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/electricity/servicepoints`
+        };
+        let ep = getEndpoint(mockRequest as Request, defaultEndpoints as DsbEndpoint[]);
+        expect(ep).not.toBeNull()
+        expect(ep?.requestPath).toEqual('/energy/electricity/servicepoints');
+    });
+
     test('Find endpoints - no parameters', async () => {
         
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
@@ -76,7 +90,7 @@ describe('Utility functions tests', () => {
         }
 
         //req: Request, options: EndpointConfig[], errorList : ResponseErrorListV2 
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, endpoints as DsbEndpoint[]);
         expect(ep).not.toBeNull()
         expect(ep?.requestPath).toEqual('/energy/electricity/servicepoints');
     });
@@ -88,7 +102,7 @@ describe('Utility functions tests', () => {
             method: 'GET',
             url: `${standardsVersion}/banking/accounts/1234567`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, endpoints as DsbEndpoint[]);
         expect(ep).not.toBeNull()
         expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}');
 
@@ -101,7 +115,7 @@ describe('Utility functions tests', () => {
             method: 'GET',
             url: `${standardsVersion}/energy/accounts/123456/balance`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, endpoints as DsbEndpoint[]);
         expect(ep).not.toBeNull();
         expect(ep?.requestPath).toEqual('/energy/accounts/{accountId}/balance');
 
@@ -114,7 +128,7 @@ describe('Utility functions tests', () => {
             method: 'GET',
             url: `${standardsVersion}/banking/accounts/123456/payments/scheduled`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, endpoints as DsbEndpoint[]);
         expect(ep).not.toBeNull();
         expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}/payments/scheduled');
 
@@ -127,7 +141,7 @@ describe('Utility functions tests', () => {
             method: 'GET',
             url: `${standardsVersion}/energy/accounts/123456/balance/`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, endpoints as DsbEndpoint[]);
         expect(ep).not.toBeNull();
         expect(ep?.requestPath).toEqual('/energy/accounts/{accountId}/balance');
 
@@ -138,9 +152,9 @@ describe('Utility functions tests', () => {
         const endpoints = [...energyEndpoints, ...bankingEndpoints];  
         mockRequest = {
             method: 'GET',
-            url: `${standardsVersion}/energy/all-customer`,
+            url: `${standardsVersion}/energy/electricity/all-accounts`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, undefined);
         expect(ep).toBe(null);
 
     });
@@ -152,7 +166,7 @@ describe('Utility functions tests', () => {
             method: 'GET',
             url: `${standardsVersion}/banking/accounts/1234567?page=2&page-size=5`,
         }
-        let ep = getEndpoint(mockRequest as Request, errorList);
+        let ep = getEndpoint(mockRequest as Request, undefined);
         expect(ep).not.toBeNull()
         expect(ep?.requestPath).toEqual('/banking/accounts/{accountId}');
 
