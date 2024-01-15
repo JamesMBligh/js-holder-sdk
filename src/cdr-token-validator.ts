@@ -9,14 +9,15 @@ import { CdrConfig } from './models/cdr-config';
 
 
 
-export function cdrTokenValidator(authOptions: CdrConfig): any {
+export function cdrTokenValidator(config: CdrConfig): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
 
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let ep = getEndpoint(req, authOptions, errorList);
+        
+        let ep = getEndpoint(req, config);
         if (ep != null) {
             // if there no authorisation required
             if (ep.authScopesRequired == null) {

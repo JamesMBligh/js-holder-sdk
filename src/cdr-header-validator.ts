@@ -19,7 +19,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
             errors:  []
         }
 
-        let ep = getEndpoint(req, options, errorList);
+        let ep = getEndpoint(req, options);
 
         if (ep != null) {
             let minSupportedVersion = findMinSupported(req, options);
@@ -217,7 +217,7 @@ function findMinSupported(req: Request, options: CdrConfig): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, options) as DsbEndpoint;
         const endpoints = options.endpoints;
         var idx = endpoints.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         var ep = endpoints[idx];
@@ -233,7 +233,7 @@ function findMaxSupported(req: Request, options: CdrConfig): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, options) as DsbEndpoint;
         const endpoints = options.endpoints;
         var idx = endpoints.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         let ep = endpoints[idx];
