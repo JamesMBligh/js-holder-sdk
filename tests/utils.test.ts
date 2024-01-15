@@ -156,7 +156,7 @@ describe('Utility functions', () => {
             endpoints: endpoints as any[]
         }
         let ep = getEndpoint(mockRequest as Request, config);
-        expect(ep).toBeUndefined();
+        expect(ep).toEqual(null);
 
     });
 

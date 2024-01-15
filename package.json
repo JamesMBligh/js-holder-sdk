@@ -3,14 +3,6 @@
   "version": "1.2.1",
   "description": "NodeJS middleware to handle error generation in line with Australian Consumer Data Standards technical specifications",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist/**/*.json",
-    "dist/**/*.js",
-    "dist/**/*.d.ts",
-    "dist/index.d.ts",
-    "dist/index.js"
-  ],
   "scripts": {
     "build": "tsc",
     "test": "jest --coverage",

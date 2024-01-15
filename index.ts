@@ -8,6 +8,10 @@ import defaultBankingEndpoints from './src/data/default-banking.json';
 import defaultCommonEndpoints from './src/data/default-common.json';
 import { EndpointConfig } from './src/models/endpoint-config';
 import { getEndpoint } from './src/cdr-utils';
+import { cdrEndpointValidator } from './src/cdr-endpoint-validator';
+import { cdrScopeValidator } from './src/cdr-scope-validator';
+import { cdrResourceValidator } from './src/cdr-resource-validator';
+import { IUserService } from './src/models/user-service.interface';
 
 const DefaultEnergyEndpoints = [...defaultEnergyEndpoints] as EndpointConfig[];
 const DefaultBankingEndpoints = [...defaultBankingEndpoints] as EndpointConfig[];
@@ -21,7 +25,7 @@ export { DsbResponse } from './src/models/dsb-response';
 
 
 export {
-     cdrHeaderValidator, cdrTokenValidator, cdrJwtScopes,
-     DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints, getEndpoint
+     cdrHeaderValidator, cdrTokenValidator, cdrJwtScopes, cdrEndpointValidator, cdrScopeValidator, cdrResourceValidator,
+     DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints, getEndpoint, IUserService
 }
 

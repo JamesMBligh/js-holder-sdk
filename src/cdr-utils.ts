@@ -14,7 +14,9 @@ export function getEndpoint(req: Request, options: CdrConfig | undefined): DsbEn
     if (options?.endpoints == null) {
         endpoints = defaultEndpoints as DsbEndpoint[];
     }
-
+    else {
+        endpoints = options.endpoints;
+    }
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
     // remove the base path if one has been specified in config
