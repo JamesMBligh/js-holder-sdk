@@ -5,13 +5,23 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { DsbRequest } from './models/dsb-request';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
+import { DsbEndpoint } from './models/dsb-endpoint-entity';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
 
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
 
-
-
-export function cdrTokenValidator(config: CdrConfig): any {
+export function cdrTokenValidator(config: CdrConfig | null): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
+
+        let endpoints : DsbEndpoint[] = [];
+        if (config?.endpoints == null) {
+            endpoints = defaultEndpoints;
+        } else {
+            endpoints = config?.endpoints as DsbEndpoint[];
+        }
 
         let errorList : ResponseErrorListV2 = {
             errors:  []

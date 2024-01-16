@@ -9,16 +9,23 @@ import { CdrUser } from './models/user';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
-export function getEndpoint(req: Request, options: CdrConfig | undefined): DsbEndpoint | null {
-    var endpoints: EndpointConfig[] = [];
+export function getEndpoint(req: Request, options: CdrConfig | null): DsbEndpoint | null {
+    var endpoints: DsbEndpoint[] = [];
     if (options?.endpoints == null) {
         endpoints = defaultEndpoints as DsbEndpoint[];
     }
     else {
-        endpoints = options.endpoints;
+        let dsbEndpoints: DsbEndpoint[] = [];
+        options.endpoints.forEach(e => {
+            let dsbEp = defaultEndpoints.find(x => x.requestPath == e.requestPath && x.requestType == e.requestType) as DsbEndpoint;
+            dsbEndpoints.push(dsbEp)
+        })
+        endpoints = dsbEndpoints;
     }
+    let requestUrlElements: string[] = req.url.split('?');
     // create an array with all the path elements
-    let requestUrlArray = req.url.split('/').splice(1);
+    let requestUrlArray = requestUrlElements[0].split('/').splice(1);
+    requestUrlArray = removeEmptyEntries(requestUrlArray);
     // remove the base path if one has been specified in config
     requestUrlArray = removeBasePath(options?.basePath, requestUrlArray);
 
@@ -37,11 +44,11 @@ export function getEndpoint(req: Request, options: CdrConfig | undefined): DsbEn
     requestUrlArray = removeEmptyEntries(requestUrlArray);
     // the search array which will change as the search progresses
     // remove query parameters from end
-    let tmp1: string = requestUrlArray[requestUrlArray.length - 1];
-    let newValArray: string[] = tmp1.split('?');
+    //let tmp1: string = requestUrlArray[requestUrlArray.length - 1];
+  //  let newValArray: string[] = tmp1.split('?');
 
     // this is the array with each part of the uri as one element
-    requestUrlArray[requestUrlArray.length - 1] = newValArray[0];
+    //requestUrlArray[requestUrlArray.length - 1] = newValArray[0];
     // this array should have at least 2 entries. There is no CDR endpoint with less than that
     if (requestUrlArray.length < 2) return null;
     // get a subset of endpoints this url could be, filter by the first two parts of url and request type

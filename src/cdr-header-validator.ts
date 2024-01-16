@@ -8,10 +8,16 @@ import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
+import { EndpointConfig } from './models/endpoint-config';
 
 
 
-export function cdrHeaderValidator(options: CdrConfig): any {
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
+
+export function cdrHeaderValidator(config: CdrConfig | null): any {
     
     return function headers(req: Request, res: DsbResponse, next: NextFunction) {
 
@@ -19,11 +25,19 @@ export function cdrHeaderValidator(options: CdrConfig): any {
             errors:  []
         }
 
-        let ep = getEndpoint(req, options);
+        let ep = getEndpoint(req, config);
 
         if (ep != null) {
-            let minSupportedVersion = findMinSupported(req, options);
-            let maxSupportedVersion = findMaxSupported(req, options);
+            let endpoints : EndpointConfig[] = [];
+            if (config == null) {
+                
+                endpoints = defaultEndpoints as EndpointConfig[];
+                config = {
+                    endpoints: endpoints
+                }
+            }
+            let minSupportedVersion = findMinSupported(req, config);
+            let maxSupportedVersion = findMaxSupported(req, config);
             let xfapiIsRequired: boolean = findXFapiRequired(req);
     
             let requestVersionObject = {
@@ -74,12 +88,11 @@ export function cdrHeaderValidator(options: CdrConfig): any {
                     return;
                 }    
             } 
-        } if (options.specifiedEndpointsOnly) {
+        } if (config?.specifiedEndpointsOnly) {
             // this endpoint was not found
             res.status(404).json(errorList);
             return;
         }
-
         next(); 
     } 
 }

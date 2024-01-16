@@ -5,28 +5,32 @@ import { CdrConfig } from "./models/cdr-config";
 import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
-import { DsbEndpoint } from "./models/dsb-endpoint-entity";
 import { EndpointConfig } from "./models/endpoint-config";
+import { DsbEndpoint } from "./models/dsb-endpoint-entity";
 
-const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as DsbEndpoint[];
 
-export function cdrEndpointValidator(config: CdrConfig | undefined) {
+export function cdrEndpointValidator(config: CdrConfig | null) {
 
     return function endpoint(req: Request, res: Response, next: NextFunction): any {
         console.log("cdrEndpointValidator.....");
         let errorList: ResponseErrorListV2 = {
             errors: []
         }
-        let endpoints : EndpointConfig[] = [];
+        let endpoints : DsbEndpoint[] = [];
         if (config?.endpoints == null) {
-            endpoints = defaultEndpoints as EndpointConfig[];
+            endpoints = defaultEndpoints;
         } else {
-            endpoints = config?.endpoints as EndpointConfig[];
+            endpoints = config?.endpoints as DsbEndpoint[];
         }
         let returnEP = getEndpoint(req, config);
         // determine if this could be an endpoint, ie it is one defined by the DSB
         
-        let isDsbEndpoint = getEndpoint(req, config) != null;
+        let defaultConfig :CdrConfig = {
+            endpoints: defaultEndpoints,
+            basePath: config?.basePath
+        } 
+        let isDsbEndpoint = getEndpoint(req, defaultConfig) != null;
         console.log(`isDsbEndpoint=${isDsbEndpoint}`);
         if (!isDsbEndpoint) {
             console.log(`No endpoint found for url ${req.url}`);
