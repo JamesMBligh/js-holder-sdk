@@ -9,6 +9,7 @@ export function cdrResourceValidator(userService: IUserService): any {
 
     return async function auth(req: Request, res: Response, next: NextFunction) {
             console.log("cdrResourceValidator.....");
+           
             let errorList: ResponseErrorListV2 = {
                 errors: []
             }

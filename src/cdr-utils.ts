@@ -9,7 +9,8 @@ import { CdrUser } from './models/user';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
 
-export function getEndpoint(req: Request, options: CdrConfig | null): DsbEndpoint | null {
+// If no config is specified than a config with the default endpoints is being used
+export function getEndpoint(req: Request, options: CdrConfig | undefined): DsbEndpoint | null {
     var endpoints: DsbEndpoint[] = [];
     if (options?.endpoints == null) {
         endpoints = defaultEndpoints as DsbEndpoint[];
@@ -42,13 +43,7 @@ export function getEndpoint(req: Request, options: CdrConfig | null): DsbEndpoin
     }
     requestUrlArray = requestUrlArray.slice(2);
     requestUrlArray = removeEmptyEntries(requestUrlArray);
-    // the search array which will change as the search progresses
-    // remove query parameters from end
-    //let tmp1: string = requestUrlArray[requestUrlArray.length - 1];
-  //  let newValArray: string[] = tmp1.split('?');
 
-    // this is the array with each part of the uri as one element
-    //requestUrlArray[requestUrlArray.length - 1] = newValArray[0];
     // this array should have at least 2 entries. There is no CDR endpoint with less than that
     if (requestUrlArray.length < 2) return null;
     // get a subset of endpoints this url could be, filter by the first two parts of url and request type

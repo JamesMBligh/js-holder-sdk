@@ -17,7 +17,8 @@ import { EndpointConfig } from './models/endpoint-config';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
 
-export function cdrHeaderValidator(config: CdrConfig | null): any {
+
+export function cdrHeaderValidator(config: CdrConfig | undefined): any {
     
     return function headers(req: Request, res: DsbResponse, next: NextFunction) {
 
@@ -88,7 +89,8 @@ export function cdrHeaderValidator(config: CdrConfig | null): any {
                     return;
                 }    
             } 
-        } if (config?.specifiedEndpointsOnly) {
+        }
+        if (config?.specifiedEndpointsOnly) {
             // this endpoint was not found
             res.status(404).json(errorList);
             return;
