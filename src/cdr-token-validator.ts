@@ -12,7 +12,7 @@ import commonEndpoints from './data/cdr-common-endpoints.json';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
 
-export function cdrTokenValidator(config: CdrConfig | null): any {
+export function cdrTokenValidator(config: CdrConfig | undefined): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
 

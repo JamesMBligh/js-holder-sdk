@@ -10,39 +10,37 @@ import { DsbEndpoint } from "./models/dsb-endpoint-entity";
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as DsbEndpoint[];
 
-export function cdrEndpointValidator(config: CdrConfig | null) {
+export function cdrEndpointValidator(config: CdrConfig | undefined) {
 
     return function endpoint(req: Request, res: Response, next: NextFunction): any {
         console.log("cdrEndpointValidator.....");
+
         let errorList: ResponseErrorListV2 = {
             errors: []
         }
-        let endpoints : DsbEndpoint[] = [];
-        if (config?.endpoints == null) {
-            endpoints = defaultEndpoints;
-        } else {
-            endpoints = config?.endpoints as DsbEndpoint[];
-        }
-        let returnEP = getEndpoint(req, config);
-        // determine if this could be an endpoint, ie it is one defined by the DSB
-        
-        let defaultConfig :CdrConfig = {
-            endpoints: defaultEndpoints,
-            basePath: config?.basePath
-        } 
-        let isDsbEndpoint = getEndpoint(req, defaultConfig) != null;
-        console.log(`isDsbEndpoint=${isDsbEndpoint}`);
-        if (!isDsbEndpoint) {
-            console.log(`No endpoint found for url ${req.url}`);
-            errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'}) ;
-            res.status(404).json(errorList); 
-            return;  
-        }
-        if (returnEP == null) {
-            console.log(`Valid endpoint but has not been implemented: ${req.url}`);
-            errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'});
-            res.status(404).json(errorList);
-            return;
+        // Don't need to validate endpoints if the specifiedEndpointsOnly=true has been set
+        // This will effectively bypass this function
+        if (config?.specifiedEndpointsOnly == null || config.specifiedEndpointsOnly == false) {
+            let returnEP = getEndpoint(req, config);
+            // determine if this could be an endpoint, ie it is one defined by the DSB
+            let defaultConfig :CdrConfig = {
+                endpoints: defaultEndpoints,
+                basePath: config?.basePath
+            } 
+            let isDsbEndpoint = getEndpoint(req, defaultConfig) != null;
+            console.log(`isDsbEndpoint=${isDsbEndpoint}`);
+            if (!isDsbEndpoint) {
+                console.log(`No CDR endpoint found for url ${req.url}`);
+                errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'}) ;
+                res.status(404).json(errorList); 
+                return;  
+            }
+            if (returnEP == null) {
+                console.log(`Valid endpoint but has not been implemented: ${req.url}`);
+                errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'});
+                res.status(404).json(errorList);
+                return;
+            }
         }
         next();
     }

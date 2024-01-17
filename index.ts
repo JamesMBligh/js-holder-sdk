@@ -25,7 +25,9 @@ export { DsbResponse } from './src/models/dsb-response';
 
 
 export {
-     cdrHeaderValidator, cdrTokenValidator, cdrJwtScopes, cdrEndpointValidator, cdrScopeValidator, cdrResourceValidator,
-     DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints, getEndpoint, IUserService
+     cdrHeaderValidator, cdrTokenValidator, cdrJwtScopes,
+     cdrEndpointValidator, cdrScopeValidator, cdrResourceValidator,
+     DefaultEnergyEndpoints, DefaultBankingEndpoints, DefaultCommonEndpoints,
+     getEndpoint, IUserService
 }
 
