@@ -42,8 +42,11 @@ export function cdrTokenValidator(config: CdrConfig | null): any {
 
             // If there is no scopes property on the request object, go the next()
             if (req?.scopes == undefined) {
-                next();
-                return;
+                errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
+                res.status(403).json(errorList);
+                return;   
+                // next();
+                // return;
             }
 
             // check if the right scope exist        
@@ -55,10 +58,11 @@ export function cdrTokenValidator(config: CdrConfig | null): any {
                 res.status(403).json(errorList);
                 return;         
             } 
-        } else {
-            // if the endpoint is null, there will be some errors (genereated in getEndpoint)
+        }
+        if (config?.specifiedEndpointsOnly) {
+            // this endpoint was not found
             res.status(404).json(errorList);
-            return;   
+            return;
         }
         next();
     } 
