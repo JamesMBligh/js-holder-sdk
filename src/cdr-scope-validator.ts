@@ -13,10 +13,12 @@ export function cdrScopeValidator(userService: IUserService): any {
         }
         let user = userService.getUser();
         if (scopeForRequestIsValid(req, user?.scopes_supported) == false) {
+            console.log("cdrScopeValidator: scopes for request are invalid.");
             errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
             res.status(403).json(errorList);
             return;         
         } 
+        console.log("cdrScopeValidator: OK.");
         next();
     }
 }

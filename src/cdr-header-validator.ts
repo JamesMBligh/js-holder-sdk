@@ -21,7 +21,7 @@ const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndp
 export function cdrHeaderValidator(config: CdrConfig | undefined): any {
     
     return function headers(req: Request, res: DsbResponse, next: NextFunction) {
-
+        console.log("cdrHeaderValidator.....");
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
@@ -73,6 +73,7 @@ export function cdrHeaderValidator(config: CdrConfig | undefined): any {
             }
 
             if (errorList != null && errorList.errors.length > 0) {
+                console.log("cdrHeaderValidator: Errors found in headers");
                 res.status(400).json(errorList);
                 return;
             } else {
@@ -91,10 +92,12 @@ export function cdrHeaderValidator(config: CdrConfig | undefined): any {
             } 
         }
         if (config?.specifiedEndpointsOnly) {
+            console.log("cdrHeaderValidator: specifiedEndpointsOnly=True and endpoint not found");
             // this endpoint was not found
             res.status(404).json(errorList);
             return;
         }
+        console.log("cdrHeaderValidator: OK.");
         next(); 
     } 
 }

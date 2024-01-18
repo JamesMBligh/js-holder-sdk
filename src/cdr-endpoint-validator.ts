@@ -30,18 +30,19 @@ export function cdrEndpointValidator(config: CdrConfig | undefined) {
             let isDsbEndpoint = getEndpoint(req, defaultConfig) != null;
             console.log(`isDsbEndpoint=${isDsbEndpoint}`);
             if (!isDsbEndpoint) {
-                console.log(`No CDR endpoint found for url ${req.url}`);
+                console.log(`cdrEndpointValidator: No CDR endpoint found for url ${req.url}`);
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotFound', title: 'NotFound', detail: 'This endpoint is not a CDR endpoint'}) ;
                 res.status(404).json(errorList); 
                 return;  
             }
             if (returnEP == null) {
-                console.log(`Valid endpoint but has not been implemented: ${req.url}`);
+                console.log(`cdrEndpointValidator: Valid endpoint but has not been implemented: ${req.url}`);
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Resource/NotImplemented', title: 'NotImplemented', detail: 'This endpoint has not been implemented'});
                 res.status(404).json(errorList);
                 return;
             }
         }
+        console.log("cdrEndpointValidator: OK.");
         next();
     }
 

@@ -15,7 +15,7 @@ const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndp
 export function cdrTokenValidator(config: CdrConfig | undefined): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
-
+        console.log("cdrTokenValidator.....");
         let endpoints : DsbEndpoint[] = [];
         if (config?.endpoints == null) {
             endpoints = defaultEndpoints;
@@ -30,23 +30,25 @@ export function cdrTokenValidator(config: CdrConfig | undefined): any {
         let ep = getEndpoint(req, config);
         if (ep != null) {
             // if there no authorisation required
+            
             if (ep.authScopesRequired == null) {
+                console.log("cdrTokenValidator: no authorisation required.");
                 next();
                 return;
             } 
             // check if a token exists at all    
-            if (!req.headers || !req.headers.authorization) {
+            if (!req.headers || !req?.headers?.authorization) {
+                console.log("cdrTokenValidator: no token found in header.");
                 res.status(401).json();
                 return;
             }
 
             // If there is no scopes property on the request object, go the next()
             if (req?.scopes == undefined) {
+                console.log("cdrTokenValidator: No scopes found.");
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
                 res.status(403).json(errorList);
                 return;   
-                // next();
-                // return;
             }
 
             // check if the right scope exist        
@@ -54,16 +56,19 @@ export function cdrTokenValidator(config: CdrConfig | undefined): any {
 
             // read the scope and compare to the scope required
             if (availableScopes == undefined || availableScopes?.indexOf(ep.authScopesRequired) == -1) {
+                console.log("cdrTokenValidator: Required scopes not found.");
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
                 res.status(403).json(errorList);
                 return;         
             } 
         }
         if (config?.specifiedEndpointsOnly) {
+            console.log("cdrTokenValidator: specifiedEndpointsOnly=True and endpoint not found");
             // this endpoint was not found
             res.status(404).json(errorList);
             return;
         }
+        console.log("cdrTokenValidator: OK.");
         next();
     } 
 }
