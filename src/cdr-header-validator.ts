@@ -8,22 +8,37 @@ import { getEndpoint, findXFapiRequired } from './cdr-utils';
 import { DsbEndpoint } from './models/dsb-endpoint-entity';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
+import { EndpointConfig } from './models/endpoint-config';
 
 
 
-export function cdrHeaderValidator(options: CdrConfig): any {
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
+
+
+export function cdrHeaderValidator(config: CdrConfig | undefined): any {
     
     return function headers(req: Request, res: DsbResponse, next: NextFunction) {
-
+        console.log("cdrHeaderValidator.....");
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
 
-        let ep = getEndpoint(req, options, errorList);
+        let ep = getEndpoint(req, config);
 
         if (ep != null) {
-            let minSupportedVersion = findMinSupported(req, options);
-            let maxSupportedVersion = findMaxSupported(req, options);
+            let endpoints : EndpointConfig[] = [];
+            if (config == null) {
+                
+                endpoints = defaultEndpoints as EndpointConfig[];
+                config = {
+                    endpoints: endpoints
+                }
+            }
+            let minSupportedVersion = findMinSupported(req, config);
+            let maxSupportedVersion = findMaxSupported(req, config);
             let xfapiIsRequired: boolean = findXFapiRequired(req);
     
             let requestVersionObject = {
@@ -58,6 +73,7 @@ export function cdrHeaderValidator(options: CdrConfig): any {
             }
 
             if (errorList != null && errorList.errors.length > 0) {
+                console.log("cdrHeaderValidator: Errors found in headers");
                 res.status(400).json(errorList);
                 return;
             } else {
@@ -74,12 +90,14 @@ export function cdrHeaderValidator(options: CdrConfig): any {
                     return;
                 }    
             } 
-        } if (options.specifiedEndpointsOnly) {
+        }
+        if (config?.specifiedEndpointsOnly) {
+            console.log("cdrHeaderValidator: specifiedEndpointsOnly=True and endpoint not found");
             // this endpoint was not found
             res.status(404).json(errorList);
             return;
         }
-
+        console.log("cdrHeaderValidator: OK.");
         next(); 
     } 
 }
@@ -217,7 +235,7 @@ function findMinSupported(req: Request, options: CdrConfig): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, options) as DsbEndpoint;
         const endpoints = options.endpoints;
         var idx = endpoints.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         var ep = endpoints[idx];
@@ -233,7 +251,7 @@ function findMaxSupported(req: Request, options: CdrConfig): number {
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let dsbEndpoint = getEndpoint(req, options, errorList) as DsbEndpoint;
+        let dsbEndpoint = getEndpoint(req, options) as DsbEndpoint;
         const endpoints = options.endpoints;
         var idx = endpoints.findIndex(x => x.requestPath == dsbEndpoint.requestPath);
         let ep = endpoints[idx];

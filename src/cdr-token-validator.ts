@@ -5,34 +5,50 @@ import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { DsbRequest } from './models/dsb-request';
 import { DsbResponse } from './models/dsb-response';
 import { CdrConfig } from './models/cdr-config';
+import { DsbEndpoint } from './models/dsb-endpoint-entity';
+import energyEndpoints from './data/cdr-energy-endpoints.json';
+import bankingEndpoints from './data/cdr-banking-endpoints.json';
+import commonEndpoints from './data/cdr-common-endpoints.json';
 
+const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints] as any[];
 
-
-
-export function cdrTokenValidator(authOptions: CdrConfig): any {
+export function cdrTokenValidator(config: CdrConfig | undefined): any {
 
     return function auth(req: DsbRequest, res: DsbResponse, next: NextFunction) : any {
+        console.log("cdrTokenValidator.....");
+        let endpoints : DsbEndpoint[] = [];
+        if (config?.endpoints == null) {
+            endpoints = defaultEndpoints;
+        } else {
+            endpoints = config?.endpoints as DsbEndpoint[];
+        }
 
         let errorList : ResponseErrorListV2 = {
             errors:  []
         }
-        let ep = getEndpoint(req, authOptions, errorList);
+        
+        let ep = getEndpoint(req, config);
         if (ep != null) {
             // if there no authorisation required
+            
             if (ep.authScopesRequired == null) {
+                console.log("cdrTokenValidator: no authorisation required.");
                 next();
                 return;
             } 
             // check if a token exists at all    
-            if (!req.headers || !req.headers.authorization) {
+            if (!req.headers || !req?.headers?.authorization) {
+                console.log("cdrTokenValidator: no token found in header.");
                 res.status(401).json();
                 return;
             }
 
             // If there is no scopes property on the request object, go the next()
             if (req?.scopes == undefined) {
-                next();
-                return;
+                console.log("cdrTokenValidator: No scopes found.");
+                errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
+                res.status(403).json(errorList);
+                return;   
             }
 
             // check if the right scope exist        
@@ -40,15 +56,19 @@ export function cdrTokenValidator(authOptions: CdrConfig): any {
 
             // read the scope and compare to the scope required
             if (availableScopes == undefined || availableScopes?.indexOf(ep.authScopesRequired) == -1) {
+                console.log("cdrTokenValidator: Required scopes not found.");
                 errorList.errors.push({code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent', title: 'InvalidConsent', detail: 'Invalid scope'})
                 res.status(403).json(errorList);
                 return;         
             } 
-        } else {
-            // if the endpoint is null, there will be some errors (genereated in getEndpoint)
-            res.status(404).json(errorList);
-            return;   
         }
+        if (config?.specifiedEndpointsOnly) {
+            console.log("cdrTokenValidator: specifiedEndpointsOnly=True and endpoint not found");
+            // this endpoint was not found
+            res.status(404).json(errorList);
+            return;
+        }
+        console.log("cdrTokenValidator: OK.");
         next();
     } 
 }

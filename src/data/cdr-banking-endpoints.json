@@ -43,7 +43,7 @@
         "requestType": "GET",
         "requestPath": "/banking/accounts/{accountId}",
         "requiresXFAPIAuthdate": true,
-        "authScopesRequired": "bank:accounts.basic:read",
+        "authScopesRequired": "bank:accounts.detail:read",
         "requiresCDSClientHeader": false,
         "requiresXv": true,
         "requiresCDSArrangementID": false,
