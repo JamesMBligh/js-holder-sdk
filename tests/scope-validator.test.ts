@@ -5,6 +5,7 @@ import { EndpointConfig } from '../src/models/endpoint-config';
 import { IUserService } from '../src/models/user-service.interface';
 import { CdrUser } from '../src/models/user';
 import { Request, Response, NextFunction } from 'express';
+import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
 describe('Scope validation middleware', () => {
     let mockRequest: Partial<Request>;
@@ -47,20 +48,29 @@ describe('Scope validation middleware', () => {
             method: 'GET',
             url: `${standardsVersion}/energy/plans`
         };
-
-        let endpoints: EndpointConfig[] = [{
-            "requestType": "GET",
-            "requestPath": "/energy/plans",
-            "minSupportedVersion": 1,
-            "maxSupportedVersion": 4
-        }]
-        let authConfig: CdrConfig = {
-
-            endpoints: endpoints
-        }
         let auth = cdrScopeValidator(mockUserService);
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });
+
+
+    test('Invalid scope return 403 with error', async () => {
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/banking/accounts`
+        };
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Authorisation/InvalidConsent',
+                title: 'InvalidConsent',
+                detail: 'Invalid scope'
+            }]
+        };
+        let auth = cdrScopeValidator(mockUserService);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(403);
+    });
+
 
 });

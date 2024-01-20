@@ -249,5 +249,33 @@ describe('Endpoint validation middleware', () => {
         auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
         expect(nextFunction).toBeCalledTimes(1);
     });  
-        
+   
+    test('Call endpoint without basePath when basePath is specified', async () => {
+
+        let endpoints: EndpointConfig[] = [{
+            "requestType": "GET",
+            "requestPath": "/energy/electricity/servicepoints",
+            "minSupportedVersion": 1,
+            "maxSupportedVersion": 4
+        }]
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/electricity/all-accounts`
+        };
+        let config: CdrConfig = {
+            endpoints: endpoints,
+            basePath: "/prod-data"
+        }
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Resource/NotFound',
+                title: 'NotFound',
+                detail: 'This endpoint is not a CDR endpoint'
+            }]
+        };
+        let auth = cdrEndpointValidator(config);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });  
 });
