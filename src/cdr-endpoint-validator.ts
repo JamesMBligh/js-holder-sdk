@@ -18,9 +18,9 @@ export function cdrEndpointValidator(config: CdrConfig | undefined) {
         let errorList: ResponseErrorListV2 = {
             errors: []
         }
-        // Don't need to validate endpoints if the specifiedEndpointsOnly=true has been set
+        // Don't need to validate endpoints if the specifiedEndpointsOnly=false has been set
         // This will effectively bypass this function
-        if (config?.specifiedEndpointsOnly == null || config.specifiedEndpointsOnly == false) {
+        if (config?.specifiedEndpointsOnly == null || config.specifiedEndpointsOnly == true) {
             let returnEP = getEndpoint(req, config);
             // determine if this could be an endpoint, ie it is one defined by the DSB
             let defaultConfig :CdrConfig = {

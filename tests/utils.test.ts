@@ -675,5 +675,4 @@ describe('Utility functions', () => {
         let ep = getEndpoint(mockRequest as Request, config);
         expect(ep).toBeNull();
     });
-
 });
