@@ -22,6 +22,7 @@ export { CdrConfig } from './src/models/cdr-config';
 export { EndpointConfig } from './src/models/endpoint-config';
 export { DsbRequest } from './src/models/dsb-request';
 export { DsbResponse } from './src/models/dsb-response';
+export { CdrUser } from './src/models/user';
 
 
 export {
