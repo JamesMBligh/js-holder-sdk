@@ -524,7 +524,15 @@ describe('Utility functions', () => {
     test('Test banking POST request for payments - invalid', async () => {
 
         const endpoints = [...energyEndpoints, ...bankingEndpoints];
-        const requestBody = { data: { accountIds: ['1234567', '786545'] }, meta: {} };
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "1234567A",
+                "78654599A"
+              ]
+            },
+            "meta": {}
+          } 
         mockRequest = {
             method: 'POST',
             url: `${standardsVersion}/banking/payments/scheduled`,

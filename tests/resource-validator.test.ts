@@ -18,6 +18,7 @@ describe('Resource validation middleware', () => {
         getUser(): CdrUser | undefined {
             let usr : CdrUser = {
                 accountsEnergy:['12345'],
+                accountsBanking:['87582'],
                 scopes_supported: ['energy:billing:read', 'energy:accounts.basic:read']
             }
             return usr;
@@ -135,14 +136,55 @@ describe('Resource validation middleware', () => {
                 authorization: "Bearer ytweryuuyuyiuyyuwer"
             }
         };
-        let authConfig: CdrConfig = {
 
-            endpoints: endpoints
-        }
-
-        let user = mockEnergyUserService.getUser();
         let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
-    });  
+    }); 
+    
+    test('Access account - POST request with valid ids', async () => {
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "12345"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/accounts/invoices`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: JSON.stringify(requestBody)
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    }); 
+
+    test('Access account - POST request with invalid ids', async () => {
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "12345AB"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/banking/payments/scheduled`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: JSON.stringify(requestBody)
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });     
 });
