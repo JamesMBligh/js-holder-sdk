@@ -157,7 +157,7 @@ describe('Resource validation middleware', () => {
             headers: {
                 authorization: "Bearer ytweryuuyuyiuyyuwer"
             },
-            body: JSON.stringify(requestBody)
+            body: requestBody
         };
 
         let auth = cdrResourceValidator(mockEnergyUserService);
@@ -180,7 +180,7 @@ describe('Resource validation middleware', () => {
             headers: {
                 authorization: "Bearer ytweryuuyuyiuyyuwer"
             },
-            body: JSON.stringify(requestBody)
+            body: requestBody
         };
 
         let auth = cdrResourceValidator(mockEnergyUserService);

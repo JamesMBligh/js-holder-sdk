@@ -186,7 +186,7 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 }
 
 // This will examine the request url, find any account identifiers and validate against the authorised user object
-export function authorisedForAccount(req: Request, user: CdrUser | undefined): boolean | undefined {
+export function userHasAuthorisedForAccount(req: Request, user: CdrUser | undefined): boolean | undefined {
 
     console.log(`Checking auth status for user ${JSON.stringify(user)}`);
     let ep: DsbEndpoint = findEndpointConfig(req) as DsbEndpoint;
@@ -217,7 +217,7 @@ export function authorisedForAccount(req: Request, user: CdrUser | undefined): b
     if (ep.requestType == 'POST'){          
         if (ep.requestPath.indexOf('/banking') >= 0) {
             // a POST request with no account ids passed in, not authorised 
-            let reqBody: any = JSON.parse(req.body);
+            let reqBody: any = req.body;
             if (user?.accountsBanking == null || reqBody?.data?.accountIds == null || user?.accountsBanking.length < 1) return false;
             
             let retVal :boolean = true;
@@ -232,7 +232,7 @@ export function authorisedForAccount(req: Request, user: CdrUser | undefined): b
         }
         else if (ep.requestPath.indexOf('/energy') >= 0) {
             // a POST request with no account ids passed in, not authorised 
-            let reqBody: any = JSON.parse(req.body);
+            let reqBody: any = req.body;
             if (user?.accountsEnergy == null || reqBody?.data?.accountIds == null || user?.accountsEnergy.length < 1) return false;
             let retVal :boolean = true;
             reqBody.data?.accountIds.forEach((id: string) => {

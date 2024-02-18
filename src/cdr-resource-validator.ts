@@ -1,6 +1,6 @@
 
 import { Request, Response, NextFunction } from 'express';
-import { authorisedForAccount, getEndpoint, scopeForRequestIsValid } from './cdr-utils';
+import { userHasAuthorisedForAccount, getEndpoint, scopeForRequestIsValid } from './cdr-utils';
 import { IUserService } from './models/user-service.interface';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 
@@ -21,7 +21,7 @@ export function cdrResourceValidator(userService: IUserService): any {
             var accountIds;
             // evaluate the request body
             if (req.method == 'POST') {
-                let reqBody: any = JSON.parse(req?.body);
+                let reqBody: any = req?.body;
                 if (reqBody?.data == null) {
                     console.log("cdrResourceValidator: Invalid request body. Missing property: data");
                     errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Field/Missing', title: 'Missing required field', detail: 'data' });
@@ -42,7 +42,7 @@ export function cdrResourceValidator(userService: IUserService): any {
                 }    
             }
             // check the requested accountId or other url parameters specific to a logged in user
-            if (authorisedForAccount(req, user) == false) {
+            if (userHasAuthorisedForAccount(req, user) == false) {
                 console.log("cdrResourceValidator: user not authorised, or required user not found");
                 errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Resource/Invalid', title: 'Invalid Resource', detail: `${req.url}` });
                 res.status(404).json(errorList);
