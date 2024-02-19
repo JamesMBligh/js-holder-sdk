@@ -28,13 +28,13 @@ export function cdrResourceValidator(userService: IUserService): any {
                     res.status(400).json(errorList);
                     return;  
                 }
-                if (reqBody?.data.accountIds == null) {
+                if (reqBody?.data?.accountIds == null && reqBody?.data.servicePointIds == null) {
                     console.log("cdrResourceValidator: Invalid request body. Missing property: data.accountIds");
                     errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Field/Missing', title: 'Missing required field', detail: 'data.accountIds' });
                     res.status(400).json(errorList);
                     return;  
                 }
-                if (Array.isArray(reqBody?.data.accountIds) == false) {
+                if (Array.isArray(reqBody?.data?.accountIds) == false && Array.isArray(reqBody?.data?.servicePointIds) == false) {
                     console.log("cdrResourceValidator: Invalid request body. Account Ids must be an array");
                     errorList.errors.push({ code: 'urn:au-cds:error:cds-all:Field/Invalid', title: 'Invalid field', detail: 'data.accountIds' });
                     res.status(400).json(errorList);

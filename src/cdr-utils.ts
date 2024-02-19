@@ -233,15 +233,35 @@ export function userHasAuthorisedForAccount(req: Request, user: CdrUser | undefi
         else if (ep.requestPath.indexOf('/energy') >= 0) {
             // a POST request with no account ids passed in, not authorised 
             let reqBody: any = req.body;
-            if (user?.accountsEnergy == null || reqBody?.data?.accountIds == null || user?.accountsEnergy.length < 1) return false;
+            // if neither service points or accounts have been specified exist here
+            if ((user?.accountsEnergy == null || user?.accountsEnergy.length < 1)
+                && (user?.energyServicePoints == null || user?.energyServicePoints?.length < 1))
+                 return false;
             let retVal :boolean = true;
-            reqBody.data?.accountIds.forEach((id: string) => {
-                if (user.accountsEnergy?.find(x => x == id) == null){
-                    console.log(`Authorisation for account id: ${id} not found`);
-                    retVal = false;
-                    return;
-                }
-            })
+            if (ep.requestPath == '/energy/electricity/servicepoints/usage'
+             || ep.requestPath == '/energy/electricity/servicepoints/der') {
+                if (reqBody.data?.servicePointIds.length < 1) retVal = false;
+                reqBody.data?.servicePointIds.forEach((id: string) => {
+                    if (user?.energyServicePoints?.find(x => x == id) == null){
+                        console.log(`Authorisation for service point id: ${id} not found`);
+                        retVal = false;
+                        return;
+                    }
+                })
+             }
+             if (ep.requestPath == '/energy/account/balances'
+                || ep.requestPath == '/energy/account/billing'
+                || ep.requestPath == '/energy/account/invoices') {
+                if (reqBody.data?.servicePointIds.length < 1) retVal = false;
+                reqBody.data?.accountIds.forEach((id: string) => {
+                    if (user.accountsEnergy?.find(x => x == id) == null){
+                        console.log(`Authorisation for account id: ${id} not found`);
+                        retVal = false;
+                        return;
+                    }
+                })
+             }
+
             return retVal;
         }
     }

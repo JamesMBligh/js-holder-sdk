@@ -19,6 +19,7 @@ describe('Resource validation middleware', () => {
             let usr : CdrUser = {
                 accountsEnergy:['12345'],
                 accountsBanking:['87582'],
+                energyServicePoints: ['ABC1234', 'DEF5674'],
                 scopes_supported: ['energy:billing:read', 'energy:accounts.basic:read']
             }
             return usr;
@@ -177,6 +178,73 @@ describe('Resource validation middleware', () => {
         mockRequest = {
             method: 'POST',
             url: `${standardsVersion}/banking/payments/scheduled`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });  
+    
+    test('Service Points - POST request with valid ids', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": [
+                "ABC1234"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });     
+
+    test('Service Points - POST request with invalid ids', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": [
+                "12345AB"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });  
+    
+    test('Service Points - POST request with empty id array', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": []
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
             headers: {
                 authorization: "Bearer ytweryuuyuyiuyyuwer"
             },
