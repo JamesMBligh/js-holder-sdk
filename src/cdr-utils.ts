@@ -4,7 +4,6 @@ import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
 import { CdrConfig } from './models/cdr-config';
-import { EndpointConfig } from '..';
 import { CdrUser } from './models/user';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
@@ -240,21 +239,24 @@ export function userHasAuthorisedForAccount(req: Request, user: CdrUser | undefi
             let retVal :boolean = true;
             if (ep.requestPath == '/energy/electricity/servicepoints/usage'
              || ep.requestPath == '/energy/electricity/servicepoints/der') {
-                if (reqBody.data?.servicePointIds.length < 1) retVal = false;
-                reqBody.data?.servicePointIds.forEach((id: string) => {
-                    if (user?.energyServicePoints?.find(x => x == id) == null){
-                        console.log(`Authorisation for service point id: ${id} not found`);
-                        retVal = false;
-                        return;
-                    }
-                })
+                if (reqBody.data?.servicePointIds.length < 1)
+                    retVal = false;
+                else
+                    reqBody.data?.servicePointIds.forEach((id: string) => {
+                        console.log(`Looking for ${id}`);
+                        if (user?.energyServicePoints?.indexOf(id) == -1){
+                            console.log(`Authorisation for service point id: ${id} not found`);
+                            retVal = false;
+                            return;
+                        }
+                    });
              }
              if (ep.requestPath == '/energy/account/balances'
                 || ep.requestPath == '/energy/account/billing'
                 || ep.requestPath == '/energy/account/invoices') {
                 if (reqBody.data?.servicePointIds.length < 1) retVal = false;
                 reqBody.data?.accountIds.forEach((id: string) => {
-                    if (user.accountsEnergy?.find(x => x == id) == null){
+                    if (user.accountsEnergy?.indexOf(id) == -1){
                         console.log(`Authorisation for account id: ${id} not found`);
                         retVal = false;
                         return;

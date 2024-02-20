@@ -47,7 +47,7 @@ A configuration object can
 | Request has x-fapi-interaction-id header    | The x-fapi-interaction-id from the request is returned with the response header   |
 | Invalid x-fapi-interaction-id header is provided with the request  | - Http status code 400 </br> - An *ErrorList* is returned with Header/Invalid. |
 
-![Design](/images/MiddleWareDesign-cdrHeaderValidator.jpg "Header Validator")
+![Design](./images/MiddleWareDesign-cdrHeaderValidator.jpg "Header Validator")
 
 ### cdrEndpointValidator
 
@@ -58,7 +58,7 @@ This middleware function will examine the requst url and determine if it is a CD
 | Endpoint not implemented | - Http status code 404 </br> - An *ErrorList* is returned with Resource/NotImplemented. |
 | Endpoint not is not a CDR endpoint | - Http status code 404 </br> - An *ErrorList* is returned with Resource/NotFound. |
 
-![Design](/images/MiddleWareDesign-cdrEndpointValidator.jpg "Endpoint Validator")
+![Design](./images/MiddleWareDesign-cdrEndpointValidator.jpg "Endpoint Validator")
 
 ### cdrScopeValidator
 
@@ -72,7 +72,7 @@ This middleware function will perform a scope validation. It will check the user
 | ----------- | ----------- |
 | Invalid scope in access token   | - Http status code 403 </br> - An *ErrorList* is returned with Authorisation/InvalidScope |
 
-![Design](/images/MiddleWareDesign-cdrScopeValidator.jpg "Scope Validator")
+![Design](./images/MiddleWareDesign-cdrScopeValidator.jpg "Scope Validator")
 
 ### cdrResourceValidator
 
@@ -84,7 +84,7 @@ This middleware function will validate resource specific identifiers (eg account
 | ----------- | ----------- |
 | Access to the resource url has not been consented to | Http status code 404 </br>  |
 
-![Design](/images/MiddleWareDesign-cdrResourceValidator.jpg "Resource Validator")
+![Design](./images/MiddleWareDesign-cdrResourceValidator.jpg "Resource Validator")
 
 ### Example Request Pipeline
 
@@ -92,7 +92,7 @@ The diagram illustrates one possible request pipeline and how the middleare func
 
 Other implementations using a different order, of only some of of the exposed functions are entirely possible.
 
-![Design](/images/MiddleWareDesign-ExamplePipeline.jpg "Example Pipeline")
+![Design](./images/MiddleWareDesign-ExamplePipeline.jpg "Example Pipeline")
 
 ## Alternative Scope Validation
 
@@ -124,7 +124,7 @@ The middleware will expect a configuration object.
 
 ### Possible implementation
 
-![Design](/images/MiddleWareDesign.jpg "Alternative Scope Validation")
+![Design](./images/MiddleWareDesign.jpg "Alternative Scope Validation")
 
 ## How to use
 Install the library with npm or yarn
