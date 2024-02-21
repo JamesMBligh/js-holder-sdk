@@ -254,5 +254,73 @@ describe('Resource validation middleware', () => {
         let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
-    });     
+    });  
+ 
+    test('Not a CDR endpoint calls next()', async () => {
+
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/notaserviceendpoint`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });  
+
+    test('Missing data body returns Field/Missing error', async () => {
+        let requestBody = {
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Field/Missing',
+                title: 'Missing required field',
+                detail: 'data'
+            }]
+        };
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(400);
+    });
+    
+
+    test('Missing data.accountsId body returns Field/Missing error', async () => {
+        let requestBody = {
+            data: {},
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Field/Missing',
+                title: 'Missing required field',
+                detail: 'data.accountIds'
+            }]
+        };
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(400);
+    });
+    
 });
