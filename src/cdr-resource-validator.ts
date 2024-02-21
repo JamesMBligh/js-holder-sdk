@@ -16,7 +16,8 @@ export function cdrResourceValidator(userService: IUserService): any {
             let ep = getEndpoint(req, undefined);
             if (ep == null) {
                 console.log("cdrResourceValidator: No endpoint found. Nothing to evaluate");  
-                next();               
+                next(); 
+                return;              
             };
             var accountIds;
             // evaluate the request body
