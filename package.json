@@ -5,11 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "images",
-    "src/data/*.json"
+      "dist",
+      "images"
   ],
   "scripts": {
-    "build": "tsc &&   cp -r ./src/data ./dist && cp -r ./images ./dist",
+    "build": "tsc && cp -r ./src/data ./dist",
     "test": "jest --coverage",
     "test:watch": "jest --watch",
     "dev": "nodemon"
