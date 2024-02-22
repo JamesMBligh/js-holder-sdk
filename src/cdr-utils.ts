@@ -4,7 +4,6 @@ import energyEndpoints from './data/cdr-energy-endpoints.json';
 import bankingEndpoints from './data/cdr-banking-endpoints.json';
 import commonEndpoints from './data/cdr-common-endpoints.json';
 import { CdrConfig } from './models/cdr-config';
-import { EndpointConfig } from '..';
 import { CdrUser } from './models/user';
 
 const defaultEndpoints = [...energyEndpoints, ...bankingEndpoints, ...commonEndpoints];
@@ -186,17 +185,26 @@ export function scopeForRequestIsValid(req: Request, scopes: string[] | undefine
 }
 
 // This will examine the request url, find any account identifiers and validate against the authorised user object
-export function authorisedForAccount(req: Request, user: CdrUser | undefined): boolean | undefined {
+export function userHasAuthorisedForAccount(req: Request, user: CdrUser | undefined): boolean | undefined {
 
     console.log(`Checking auth status for user ${JSON.stringify(user)}`);
-    if (endpointRequiresAuthentication(req) == false) {
+    let ep: DsbEndpoint = findEndpointConfig(req) as DsbEndpoint;
+    // no endpoint found, ie this is not a CDR endpoint
+    if (ep == null) {
+        return true;
+    }
+
+    if (endpointRequiresAuthentication(ep) == false) {
         console.log(`No authentication required for: ${req.url}`);
         return true;
     }
 
-    if (urlHasResourceIdentifier(req) == false && req.method == 'GET') {
-        console.log(`No resource identifier in GET url: ${req.url}`);
-        return true;
+    // The endpoint is a GET request without any reource ids in the url
+    if (ep.requestType == 'GET'){
+        if (urlHasResourceIdentifier(req) == false) {
+            console.log(`No resource identifier in GET url: ${req.url}`);
+            return true;
+        }
     }
 
     if (user == null) {
@@ -204,66 +212,123 @@ export function authorisedForAccount(req: Request, user: CdrUser | undefined): b
         return false;
     }
 
-    let url = createSearchUrl(req)?.toLowerCase();
-    if (url == undefined) {
-        console.log(`The url is not a CDR enpoint url ${req.url}`);
-        return false;
-    }
+    // The endpoint is a POST request without any reource ids in the url
+    if (ep.requestType == 'POST'){          
+        if (ep.requestPath.indexOf('/banking') >= 0) {
+            // a POST request with no account ids passed in, not authorised 
+            let reqBody: any = req.body;
+            if (user?.accountsBanking == null || reqBody?.data?.accountIds == null || user?.accountsBanking.length < 1) return false;
+            
+            let retVal :boolean = true;
+            reqBody.data?.accountIds.forEach((id: string) => {
+                if (user.accountsBanking?.find(x => x == id) == null){
+                    console.log(`Authorisation for account id: ${id} not found`);
+                    retVal = false;
+                    return;
+                }
+            })
+            return retVal;
+        }
+        else if (ep.requestPath.indexOf('/energy') >= 0) {
+            // a POST request with no account ids passed in, not authorised 
+            let reqBody: any = req.body;
+            // if neither service points or accounts have been specified exist here
+            if ((user?.accountsEnergy == null || user?.accountsEnergy.length < 1)
+                && (user?.energyServicePoints == null || user?.energyServicePoints?.length < 1))
+                 return false;
+            let retVal :boolean = true;
+            if (ep.requestPath == '/energy/electricity/servicepoints/usage'
+             || ep.requestPath == '/energy/electricity/servicepoints/der') {
+                if (reqBody.data?.servicePointIds.length < 1)
+                    retVal = false;
+                else
+                    reqBody.data?.servicePointIds.forEach((id: string) => {
+                        console.log(`Looking for ${id}`);
+                        if (user?.energyServicePoints?.indexOf(id) == -1){
+                            console.log(`Authorisation for service point id: ${id} not found`);
+                            retVal = false;
+                            return;
+                        }
+                    });
+             }
+             if (ep.requestPath == '/energy/account/balances'
+                || ep.requestPath == '/energy/account/billing'
+                || ep.requestPath == '/energy/account/invoices') {
+                if (reqBody.data?.servicePointIds.length < 1) retVal = false;
+                reqBody.data?.accountIds.forEach((id: string) => {
+                    if (user.accountsEnergy?.indexOf(id) == -1){
+                        console.log(`Authorisation for account id: ${id} not found`);
+                        retVal = false;
+                        return;
+                    }
+                })
+             }
 
-
-    if (url.indexOf('/banking/products') > -1) {
-        console.log(`No authorisation required for: ${req.url}`);
-        return true;
+            return retVal;
+        }
     }
+    else if (ep.requestType == 'GET') {
+        let url = createSearchUrl(req)?.toLowerCase();
+        if (url == undefined) {
+            console.log(`The url is not a CDR enpoint url ${req.url}`);
+            return false;
+        }
+      
+        if (url.indexOf('/banking/products') > -1) {
+            console.log(`No authorisation required for: ${req.url}`);
+            return true;
+        }
+        
+        if (url.indexOf('/energy/plans') > -1){
+            console.log(`No authorisation required for: ${req.url}`);
+            return true;
+        }
     
-    if (url.indexOf('/energy/plans') > -1){
-        console.log(`No authorisation required for: ${req.url}`);
-        return true;
-    }
-
-    if (url.indexOf('/banking/accounts') > -1) {
-        console.log(`Checking authorisation for: ${req.url}`);
-        let ret = checkBankAccountRoute(url, user);
-        console.log(`Authorisation status: ${ret}`);
-        return ret;
-    }
-
-    if (url.indexOf('/banking/payments/scheduled') > -1) {
-        console.log(`Checking authorisation for: ${req.url}`);
-        let ret = checkBankingPaymentRoute(req, url, user);
-        console.log(`Authorisation status: ${ret}`);
-        return ret;
-    }
-    if (url.indexOf('/banking/payees') > -1) {
-        console.log(`Checking authorisation for: ${req.url}`);
-        let ret = checkBankingPayeeRoute(url, user);
-        console.log(`Authorisation status: ${ret}`);
-        return ret;
-    }
-
-    if (url.indexOf('/energy/accounts') > -1) {
-        console.log(`Checking authorisation for: ${req.url}`);
-        let ret = checkEnergyAccountRoute(url, user);
-        console.log(`Authorisation status: ${ret}`);
-        return ret;
-    }
-
-    if (url.indexOf('/energy/electricity/servicepoints') > -1) {
-        console.log(`Checking authorisation for: ${req.url}`);
-        let ret = checkEnergyElectricityRoute(url, user);
-        console.log(`Authorisation status: ${ret}`);
-        return ret;
+        if (url.indexOf('/banking/accounts') > -1) {
+            console.log(`Checking authorisation for: ${req.url}`);
+            let ret = checkBankAccountRoute(url, user);
+            console.log(`Authorisation status: ${ret}`);
+            return ret;
+        }
+    
+        if (url.indexOf('/banking/payments/scheduled') > -1) {
+            console.log(`Checking authorisation for: ${req.url}`);
+            let ret = checkBankingPaymentRoute(req, user);
+            console.log(`Authorisation status: ${ret}`);
+            return ret;
+        }
+        if (url.indexOf('/banking/payees') > -1) {
+            console.log(`Checking authorisation for: ${req.url}`);
+            let ret = checkBankingPayeeRoute(url, user);
+            console.log(`Authorisation status: ${ret}`);
+            return ret;
+        }
+    
+        if (url.indexOf('/energy/accounts') > -1) {
+            console.log(`Checking authorisation for: ${req.url}`);
+            let ret = checkEnergyAccountRoute(url, user);
+            console.log(`Authorisation status: ${ret}`);
+            return ret;
+        }
+    
+        if (url.indexOf('/energy/electricity/servicepoints') > -1) {
+            console.log(`Checking authorisation for: ${req.url}`);
+            let ret = checkEnergyElectricityRoute(url, user);
+            console.log(`Authorisation status: ${ret}`);
+            return ret;
+        }
     }
 }
 
-export function endpointRequiresAuthentication(req: Request): boolean | undefined {
-    let ep = findEndpointConfig(req);
+// returns true or false indicating authentication requirement
+export function endpointRequiresAuthentication(ep: DsbEndpoint): boolean | undefined {
     if (ep != null) {
         return (ep.authScopesRequired != null)
     }
     return true;
 }
 
+// returns true or false depending if a found DSB endpoint definition is one containing a resource it in the url
 export function urlHasResourceIdentifier(req: Request): boolean | undefined {
     let ep = findEndpointConfig(req);
     if (ep != null) {
@@ -272,6 +337,9 @@ export function urlHasResourceIdentifier(req: Request): boolean | undefined {
     return false;
 }
 
+
+// Return true if the resource id (from url) is in the list of consented resource ids (from user object)
+// Validates the resource id found in any of the /banking/accounts/*** urls against the resource ids in the user object
 function checkBankAccountRoute(url: string, user: CdrUser): boolean {
     let startPos = url.indexOf('/banking/accounts/');
     let l1 = '/banking/accounts/'.length;
@@ -284,7 +352,7 @@ function checkBankAccountRoute(url: string, user: CdrUser): boolean {
         return false;
     }
     // if the subStr does not have any slashes it must be interpreted as accountid
-    if (subStr.indexOf('/') == -1) {
+    if (subStr.indexOf('/') == -1) { 
         return (user.accountsBanking?.indexOf(subStr) > -1);
     }
 
@@ -316,6 +384,8 @@ function checkBankAccountRoute(url: string, user: CdrUser): boolean {
     return false;
 }
 
+// Return true if the resource id (from url) is in the list of consented resource ids (from user object)
+// Validates the resource id found in any of the /energy/accounts/*** urls against the resource ids in the user object
 function checkEnergyAccountRoute(url: string, user: CdrUser): boolean {
     let startPos = url.indexOf('/energy/accounts/');
     let l1 = '/energy/accounts/'.length;
@@ -366,6 +436,8 @@ function checkEnergyAccountRoute(url: string, user: CdrUser): boolean {
     return false;
 }
 
+// Return true if the resource id (from url) is in the list of consented resource ids (from user object)
+// Validates the resource id found in any of the /energy/electricity/servicepoints/*** urls against the resource ids in the user object
 function checkEnergyElectricityRoute(url: string, user: CdrUser): boolean {
     let startPos = url.indexOf('/energy/electricity/servicepoints');
     let l1 = '/energy/electricity/servicepoints'.length;
@@ -394,10 +466,12 @@ function checkEnergyElectricityRoute(url: string, user: CdrUser): boolean {
     return false;
 }
 
-function checkBankingPaymentRoute(req: Request, url: string, user: CdrUser): boolean {
-    let startPos = url.indexOf('/banking/payments/scheduled');
+// Return true if the resource id (from url) is in the list of consented resource ids (from user object)
+// Validates the resource id found in any of the /banking/payments/scheduled/*** urls against the resource ids in the user object
+function checkBankingPaymentRoute(req: Request, user: CdrUser): boolean {
+    let startPos = req.url.indexOf('/banking/payments/scheduled');
     let l1 = '/banking/payments/scheduled'.length;
-    let subStr = url.substring(startPos + l1, url.length).replace(/\/+$/, '').toLowerCase();
+    let subStr = req.url.substring(startPos + l1, req.url.length).replace(/\/+$/, '').toLowerCase();
 
     if (subStr.length == 0) {
         if (req.method == 'POST') {
@@ -432,6 +506,8 @@ function checkBankingPaymentRoute(req: Request, url: string, user: CdrUser): boo
     }
 }
 
+// Return true if the resource id (from url) is in the list of consented resource ids (from user object)
+// Validates the resource id found in any of the /banking/payees/*** urls against the resource ids in the user object
 function checkBankingPayeeRoute(url: string, user: CdrUser): boolean {
     let startPos = url.indexOf('/banking/payees');
     let l1 = '/banking/payees'.length;
@@ -450,11 +526,13 @@ function checkBankingPayeeRoute(url: string, user: CdrUser): boolean {
     return false;
 }
 
+// This will examine a request url and find the matching definition from the
+// cdr-<SECTOR>-endpoints.json file.
+// The returned DsbEndpoint object contains the parameters required to perform logic
 function findEndpointConfig(req: Request): DsbEndpoint | undefined {
     // remove the host and assign to urlId  
     let tmp = req.url.substring(req.url.indexOf('//') + 2);
     let originalPath = tmp.substring(tmp.indexOf('/'));
-
 
     // create an array with all the path elements
     let requestUrlArray = req.url.split('/').splice(1);
@@ -515,6 +593,7 @@ function findEndpointConfig(req: Request): DsbEndpoint | undefined {
     return returnEP as DsbEndpoint;
 }
 
+// This will read the part of the url from cds-au/v1, stripping out any query parameters
 function createSearchUrl(req: Request): string | undefined {
     let url = req.url.substring(req.url.indexOf('//') + 2).toLowerCase();
     let baseIdx = url.indexOf('cds-au/v1')

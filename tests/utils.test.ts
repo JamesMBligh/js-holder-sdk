@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import energyEndpoints from '../src/data/cdr-energy-endpoints.json';
 import bankingEndpoints from '../src/data/cdr-banking-endpoints.json'
 import { EndpointConfig } from '../src/models/endpoint-config';
-import { authorisedForAccount, getEndpoint, scopeForRequestIsValid } from '../src/cdr-utils';
+import { userHasAuthorisedForAccount, getEndpoint, scopeForRequestIsValid } from '../src/cdr-utils';
 import { ResponseErrorListV2 } from 'consumer-data-standards/common';
 import { CdrUser } from '../src/models/user';
 import { DsbEndpoint } from '../src/models/dsb-endpoint-entity';
@@ -191,7 +191,7 @@ describe('Utility functions', () => {
         expect(ep?.requestPath).toEqual('/energy/electricity/servicepoints');
     });
 
-    // tests for authorisedForAccount - banking
+    // tests for userHasAuthorisedForAccount - banking
     test('Find account id in url and test - valid case', async () => {
 
         const endpoints = [...energyEndpoints, ...bankingEndpoints];
@@ -204,7 +204,7 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -221,7 +221,7 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -238,7 +238,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -254,7 +254,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -271,7 +271,7 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -287,7 +287,7 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -304,7 +304,7 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -321,12 +321,12 @@ describe('Utility functions', () => {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
 
-    // tests for authorisedForAccount - energy
+    // tests for userHasAuthorisedForAccount - energy
     test('Find account id in url and test - valid case', async () => {
 
         const endpoints = [...energyEndpoints, ...bankingEndpoints];
@@ -339,7 +339,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -356,7 +356,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -373,7 +373,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -389,7 +389,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -406,7 +406,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -422,7 +422,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -439,7 +439,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -456,7 +456,7 @@ describe('Utility functions', () => {
             accountsEnergy: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -510,13 +510,13 @@ describe('Utility functions', () => {
         mockRequest = {
             method: 'POST',
             url: `${standardsVersion}/banking/payments/scheduled`,
-            body: JSON.stringify(requestBody)
+            body: requestBody
         }
         let usr: CdrUser = {
             accountsBanking: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -524,17 +524,25 @@ describe('Utility functions', () => {
     test('Test banking POST request for payments - invalid', async () => {
 
         const endpoints = [...energyEndpoints, ...bankingEndpoints];
-        const requestBody = { data: { accountIds: ['1234567', '786545'] }, meta: {} };
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "1234567A",
+                "78654599A"
+              ]
+            },
+            "meta": {}
+          } 
         mockRequest = {
             method: 'POST',
             url: `${standardsVersion}/banking/payments/scheduled`,
-            body: JSON.stringify(requestBody)
+            body: requestBody
         }
         let usr: CdrUser = {
             accountsBanking: ['1234567', '78654599'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(false);
 
     });
@@ -550,7 +558,7 @@ describe('Utility functions', () => {
             bankingPayees: ['1234567', '786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
 
     });
@@ -566,7 +574,7 @@ describe('Utility functions', () => {
             bankingPayees: ['786545'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(false);
 
 
@@ -583,7 +591,7 @@ describe('Utility functions', () => {
             bankingPayees: ['12345'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(false);
 
 
@@ -600,7 +608,7 @@ describe('Utility functions', () => {
             energyServicePoints: ['12345'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -615,7 +623,7 @@ describe('Utility functions', () => {
             energyServicePoints: ['12345'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -630,7 +638,7 @@ describe('Utility functions', () => {
             energyServicePoints: ['12345'],
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(true);
     });
 
@@ -644,7 +652,7 @@ describe('Utility functions', () => {
         let usr: CdrUser = {
             scopes_supported: ['banking']
         }
-        let isValid = authorisedForAccount(mockRequest as Request, usr);
+        let isValid = userHasAuthorisedForAccount(mockRequest as Request, usr);
         expect(isValid).toEqual(false);
     });
 

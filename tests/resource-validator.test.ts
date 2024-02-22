@@ -18,6 +18,8 @@ describe('Resource validation middleware', () => {
         getUser(): CdrUser | undefined {
             let usr : CdrUser = {
                 accountsEnergy:['12345'],
+                accountsBanking:['87582'],
+                energyServicePoints: ['ABC1234', 'DEF5674'],
                 scopes_supported: ['energy:billing:read', 'energy:accounts.basic:read']
             }
             return usr;
@@ -135,14 +137,190 @@ describe('Resource validation middleware', () => {
                 authorization: "Bearer ytweryuuyuyiuyyuwer"
             }
         };
-        let authConfig: CdrConfig = {
 
-            endpoints: endpoints
-        }
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    }); 
+    
+    test('Access account - POST request with valid ids', async () => {
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "12345"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/accounts/invoices`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
 
-        let user = mockEnergyUserService.getUser();
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    }); 
+
+    test('Access account - POST request with invalid ids', async () => {
+        let requestBody = {
+            "data": {
+              "accountIds": [
+                "12345AB"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/banking/payments/scheduled`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
         let auth = cdrResourceValidator(mockEnergyUserService);
         auth(mockRequest, mockResponse,  nextFunction);
         expect(mockResponse.status).toBeCalledWith(404);
     });  
+    
+    test('Service Points - POST request with valid ids', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": [
+                "ABC1234"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });     
+
+    test('Service Points - POST request with invalid ids', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": [
+                "12345AB"
+              ]
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });  
+    
+    test('Service Points - POST request with empty id array', async () => {
+        let requestBody = {
+            "data": {
+              "servicePointIds": []
+            },
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(mockResponse.status).toBeCalledWith(404);
+    });  
+ 
+    test('Not a CDR endpoint calls next()', async () => {
+
+        mockRequest = {
+            method: 'GET',
+            url: `${standardsVersion}/energy/notaserviceendpoint`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+        };
+
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest, mockResponse,  nextFunction);
+        expect(nextFunction).toBeCalledTimes(1);
+    });  
+
+    test('Missing data body returns Field/Missing error', async () => {
+        let requestBody = {
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Field/Missing',
+                title: 'Missing required field',
+                detail: 'data'
+            }]
+        };
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(400);
+    });
+    
+
+    test('Missing data.accountsId body returns Field/Missing error', async () => {
+        let requestBody = {
+            data: {},
+            "meta": {}
+          } 
+        mockRequest = {
+            method: 'POST',
+            url: `${standardsVersion}/energy/electricity/servicepoints/der`,
+            headers: {
+                authorization: "Bearer ytweryuuyuyiuyyuwer"
+            },
+            body: requestBody
+        };
+        let returnedErrors: ResponseErrorListV2 = {
+            errors: [ {
+                code: 'urn:au-cds:error:cds-all:Field/Missing',
+                title: 'Missing required field',
+                detail: 'data.accountIds'
+            }]
+        };
+        let auth = cdrResourceValidator(mockEnergyUserService);
+        auth(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+        expect(mockStatus.json).toBeCalledWith(returnedErrors);
+        expect(mockResponse.status).toBeCalledWith(400);
+    });
+    
 });
