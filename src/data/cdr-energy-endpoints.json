@@ -149,7 +149,7 @@
         "requestType": "GET",
         "requestPath": "/energy/accounts/balances",
         "requiresXFAPIAuthdate": false,
-        "authScopesRequired": true,
+        "authScopesRequired": "energy:billing:read",
         "requiresCDSClientHeader": false,
         "requiresXv": true,
         "requiresCDSArrangementID": false,
